@@ -1,0 +1,169 @@
+{%- from "table.html" import actionbar -%}
+{% macro display_panel(data, image_processors, display_actionbar) -%}
+<div class="pan-title">
+  <a href="#" class="hiding pan-head" id="togdisplay">Display Parameters</a>
+</div>
+<div id="display_panel" toggle="togdisplay" class="hidden">
+    <input id="query_id" name="query_id" type="hidden" value="YYYYYY">
+    <fieldset id="formatting-options">
+      <legend>Output Format</legend>
+      <h3>Output Format</h3>
+      <div class="input_field">
+	<label for="output">Output Format:</label>
+	<select id="output" name="output">
+	  <option value="html" selected="selected">HTML with embedded image</option>
+	  <option value="txt">Plain text (without image)</option>
+	  <option value="csv">CSV (without image)</option>
+	</select>
+	<a class="helplink hiding" title="help" href="#" id="output-help"><span>[?]</span></a>
+      </div>
+      <div toggle="output-help" class="helpbox hidden" id="hout">
+	  Choose output format for the results.
+      </div>
+    </fieldset>
+    <fieldset id="layout-options">
+      <legend>Layout Options</legend>
+      <h3>Layout Options</h3>
+      <div class="input_field">
+	<label for="ranking_attr">Layout by:</label>
+	<select id="ranking_attr" name="ranking_attr">
+	  {% for opt in data.masterSelections['ranking_attr'].mOpt -%}
+	  {% if loop.first -%}
+	  <option value="{{ opt.value }}" selected="selected">{{ opt.text }}</option>
+	  {% else -%}
+	  <option value="{{ opt.value }}">{{ opt.text }}</option>
+	  {% endif -%}
+	  {% endfor -%}
+	</select>
+	<a class="helplink hiding" title="help" href="#" id="ranking-help"><span>[?]</span></a>
+      </div>
+      <div toggle="ranking-help" class="helpbox hidden" id="hrnk">
+	  Choose the values used to selecting the most significant nodes from the results
+	  for display in the table and in the graphical image. Presently restricted to a single
+	  choice.
+	  <a href="doc/displayopts.html#layout-options" target="qmbp-help" >more...</a>
+      </div>
+      <div class="input_field">
+	<label for="selection_criterion">Criterion:</label>
+	<select id="selection_criterion" name="selection_criterion" onchange="changedMasterSelection('selection_criterion', this.selectedIndex)">
+	  {% for opt in data.masterSelections['selection_criterion'].mOpt -%}
+	  {% if loop.first -%}
+	  <option value="{{ opt.value }}" selected="selected">{{ opt.text }}</option>
+	  {% else -%}
+	  <option value="{{ opt.value }}">{{ opt.text }}</option>
+	  {% endif -%}
+	  {% endfor -%}
+	</select>
+	<a class="helplink hiding" title="help" href="#" id="selection-help"><span>[?]</span></a>
+      </div>
+      <div toggle="selection-help" class="helpbox hidden" id="hcrit">
+	  Choose the criterion to select the number of top ranking nodes to be shown.
+	  <a href="doc/displayopts.html#layout-options" target="qmbp-help" >more...</a>
+      </div>
+      <div class="input_field">
+	<label for="value_cutoff">Cutoff Value:</label>
+	<input class="coeff_input" id="value_cutoff" name="value_cutoff" size="4" type="text" value="0.05">
+      </div>
+      <div class="input_field">
+	<label for="max_nodes">Maximum Shown:</label>
+	<input class="coeff_input" id="max_nodes" name="max_nodes" size="3" type="text" value="40">
+	<a class="helplink hiding" title="help" href="#" id="maxshown-help"><span>[?]</span></a>
+      </div>
+      <div toggle="maxshown-help" class="helpbox hidden" id="hmaxs">
+	  Enter the maximum number (up to 200) of network nodes to be shown. This option overrides
+	  the 'Criterion' selection if it would display a larger number of nodes.
+	  <a href="doc/displayopts.html#layout-options" target="qmbp-help" >more...</a>
+      </div>
+      <div class="input_field">
+	<label for="neato_seed">Layout Seed:</label>
+	<input class="seed_input" id="neato_seed" name="neato_seed" size="20" type="text" value="12345">
+	<a class="helplink hiding" title="help" href="#" id="seed-help"><span>[?]</span></a>
+      </div>
+      <div toggle="seed-help" class="helpbox hidden" id="hseed">
+	  Enter the seed to initialize the graphics layout. Each seed produces a different
+	  layout and hence this parameter can be used to obatain different layouts of the same
+	  ITM subragraph.
+	  <a href="doc/displayopts.html#layout-options" target="qmbp-help" >more...</a>
+      </div>
+    </fieldset>
+    <fieldset id="rendering-options">
+      <legend>Rendering Options</legend>
+      <h3>Rendering Options</h3>
+      <div class="input_field">
+	<label for="value_attr">Color by:</label>
+	<select id="value_attr" name="value_attr" onchange="changedMasterSelection('value_attr', this.selectedIndex)">
+	  {% for opt in data.masterSelections['value_attr'].mOpt -%}
+	  {% if loop.first -%}
+	  <option value="{{ opt.value }}" selected="selected">{{ opt.text }}</option>
+	  {% else -%}
+	  <option value="{{ opt.value }}">{{ opt.text }}</option>
+	  {% endif -%}
+	  {% endfor -%}
+	</select>
+	<a class="helplink hiding" title="help" href="#" id="value-help"><span>[?]</span></a>
+      </div>
+      <div toggle="value-help" class="helpbox hidden" id="hval">
+	  Select the values used to color the nodes in the ITM subgraph image.
+	  <a href="doc/displayopts.html#rendering-options" target="qmbp-help" >more...</a>
+      </div>
+      <div class="input_field">
+	<label for="bins_func">Scaling:</label>
+	<select id="bins_func" name="bins_func">
+	  {% for opt in data.masterSelections['value_attr'].mOpt[0].sSel[0].sOpt -%}
+	  {% if loop.first -%}
+	  <option value="{{ opt.value }}" selected="selected">{{ opt.text }}</option>
+	  {% else -%}
+	  <option value="{{ opt.value }}">{{ opt.text }}</option>
+	  {% endif -%}
+	  {% endfor -%}
+	</select>
+	<a class="helplink hiding" title="help" href="#" id="bins-help"><span>[?]</span></a>
+      </div>
+      <div toggle="bins-help" class="helpbox hidden" id="hbins">
+	  Choose the scaling function to apply to the node values before coloring.
+	  <a href="doc/displayopts.html#rendering-options" target="qmbp-help" >more...</a>
+      </div>
+      <div class="input_field">
+	<label for="color_map">Color Map:</label>
+	<select id="color_map" name="color_map">
+	  {% for opt in data.masterSelections['value_attr'].mOpt[0].sSel[1].sOpt -%}
+	  {% if loop.first -%}
+	  <option value="{{ opt.value }}" selected="selected">{{ opt.text }}</option>
+	  {% else -%}
+	  <option value="{{ opt.value }}">{{ opt.text }}</option>
+	  {% endif -%}
+	  {% endfor -%}
+	</select>
+	<a class="helplink hiding" title="help" href="#" id="color-help"><span>[?]</span></a>
+      </div>
+      <div toggle="color-help" class="helpbox hidden" id="hcolor">
+	  Choose the color palette to color the nodes.
+	  <a href="doc/displayopts.html#rendering-options" target="qmbp-help" >more...</a>
+      </div>
+      <div class="input_field">
+	<label for="image_format">Image Format:</label>
+	<select id="image_format" name="image_format">
+	  {% for ip in image_processors -%}
+	  {% if loop.first -%}
+	  <option value="{{ ip.name }}" selected="selected">{{ ip.text }}</option>
+	  {% else -%}
+	  <option value="{{ ip.name }}">{{ ip.text }}</option>
+	  {% endif -%}
+	  {% endfor -%}
+	</select>
+	<a class="helplink hiding" title="help" href="#" id="imgf-help"><span>[?]</span></a>
+      </div>
+      <div toggle="imgf-help" class="helpbox hidden" id="himgf">
+	  Choose the format of the ITM subraph image. The 'SVG in Navigator' format is best
+	  for viewing and exploring the image online while others can be used to save the
+	  image.
+	  <a href="doc/displayopts.html#rendering-options" target="qmbp-help" >more...</a>
+      </div>
+    </fieldset>
+  {% if display_actionbar -%}
+  {{ actionbar(display_actionbar) }}
+  {% endif -%}
+</div>
+<br>
+{%- endmacro %}
+

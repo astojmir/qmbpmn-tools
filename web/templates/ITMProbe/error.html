@@ -1,0 +1,15 @@
+{% extends "main_layout.html" %}
+{%- set page_title = 'ITM Probe error' %}
+{%- set sidebar_title = conf.ITMProbe_sidebar_title %}
+{%- set sidebar_blocks = conf.ITMProbe_sidebar_blocks %}
+{%- set banner_links = conf.ITMProbe_banner_links %}
+{%- if not body_attrs -%}
+{%- set body_attrs = 'onload="ao.load();"' %}
+{%- endif -%}
+
+{% block contents %}
+<h2>ITM Probe Error</h2>
+<p class="message_error">{{ error_msg | e }}</p>
+{% endblock %}
+
+

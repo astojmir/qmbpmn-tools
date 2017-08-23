@@ -1,0 +1,246 @@
+{%- extends "main_layout.html" %}
+
+{%- if not page_title -%}
+{%- set page_title = 'SaddleSum' %}
+{%- endif -%}
+
+{%- set sidebar_title = conf.enrich_sidebar_title %}
+{%- set sidebar_blocks = conf.enrich_sidebar_blocks %}
+
+{%- set banner_links = conf.enrich_banner_links %}
+
+{%- if not selected_db -%}
+{%- set selected_db = 0 %}
+{%- endif -%}
+
+{%- if not body_attrs -%}
+{%- set body_attrs = 'onload="Toggle._onload(); ao.load();"' %}
+{%- endif -%}
+
+{%- block extrahead %}
+    <link href="{{- conf.static_suffix|abspath -}}qmbp-mn-app.css" rel="stylesheet" type="text/css"/>
+    <script type="text/javascript" src="{{- conf.static_suffix|abspath -}}utils.js"></script>
+    <script type="text/javascript" src="{{- conf.static_suffix|abspath -}}toggle.js"></script>
+{%- endblock %}
+{%- block contents %}
+    <form action="enrich.cgi" id="query_form" method="post" name="query_form" target="_blank" enctype="multipart/form-data">
+      <input type="hidden" name="view" value="a" />
+      <span class="sec_title">SaddleSum QUERY FORM</span>
+      <div id="params_panel">
+	<fieldset>
+	  <h3>Term Database and Weights</h3>
+	  <div class="input_field">
+	    <label for="termdb">Term Database:</label>
+	    <select id="termdb" name="termdb">
+	      {% for txt, id in termdbs -%}
+	      {% if loop.index0 == selected_db -%}
+	      <option selected="selected" value="{{ id }}">{{ txt }}</option>
+	      {% else -%}
+	      <option value="{{ id }}">{{ txt }}</option>
+	      {% endif -%}
+	      {%- endfor -%}
+	    </select>
+	  <a class="helplink hiding" title="help" href="#" id="termdb-help"><span>[?]</span></a><br>
+	  </div>
+          <div toggle="termdb-help" class="hidden helpbox" id="htermdb">
+	    Enter the term database apropriate for your query.
+	  </div>
+	  <div class="input_field">
+	    <label for="raw_weights">Weights: enter here</label>
+	    <a class="helplink hiding" title="help" href="#" id="weights1-help"><span>[?]</span></a><br>
+            <div toggle="weights1-help" class="hidden helpbox" id="hweights1">
+	      Enter the measured entities (genes) with their weights.
+	      Each line should contain two columns separated by spaces or a tab,
+	      with the first column being the gene ID and the second the
+	      numerical weight associated with that ID.<br>
+	      Entities can be entered as NCBI Gene IDs or canonical gene
+	      symbols appropriate for the selected species. Note that the weights
+	      entered through the form are ignored if a file is uploaded.
+            </div>
+	    <textarea cols="50" id="raw_weights" name="raw_weights" rows="6">{{- init_weights -}}</textarea>
+	    <br>
+	    <label for="raw_weights">or submit a file</label>
+	    <a class="helplink hiding" title="help" href="#" id="weights2-help"><span>[?]</span></a><br>
+            <div toggle="weights2-help" class="hidden helpbox" id="hweights2">
+	      Upload a file with the measured entities (genes) with their weights.
+	      Each line should contain two columns separated by spaces or a tab,
+	      with the first column being the gene ID and the second the
+	      numerical weight associated with that ID.<br>
+	      Entities can be entered as NCBI Gene IDs or canonical gene
+	      symbols appropriate for the selected species. Note that the weights
+	      entered through the form are ignored if a file is uploaded.
+            </div>
+	    <input type="hidden" name="MAX_FILE_SIZE" value="256" />
+	    <input type="file" accept="text/plain" class="nodes_input" id="raw_weights2" name="raw_weights2"/>
+	    <br/>
+	    <p>Each line should contain a gene identifier and its weight, separated by space or a tab.</p>
+	  </div>
+	  <h3>Statistical Parameters</h3>
+	  <div class="input_field">
+	    <label for="cutoff_Evalue">E-value cutoff:</label>
+	    <input class="coeff_input" id="cutoff_Evalue" name="cutoff_Evalue" size="4" type="text" value="{{ cutoff_Evalue }}"/>
+	    <a class="helplink hiding" title="help" href="#" id="evalue-help"><span>[?]</span></a><br>
+	  </div>
+          <div toggle="evalue-help" class="hidden helpbox" id="hevalue">
+	    Set the largest E-value for a term to be considered significant.
+	  </div>
+	  <div class="input_field">
+	    <label for="min_term_size">Minimum term size:</label>
+	    <input class="coeff_input" id="min_term_size" name="min_term_size" size="4" type="text" value="{{ min_term_size }}"/>
+	    <a class="helplink hiding" title="help" href="#" id="termsize-help"><span>[?]</span></a><br>
+	  </div>
+          <div toggle="termsize-help" class="hidden helpbox" id="htermsize">
+	    Set the minimum number of entities for a term to be considered.
+	    Only entites with supplied weights count towards the term size.
+	  </div>
+	  <div class="input_field">
+	    <label for="effective_tdb_size">Effective termdb size:</label>
+	    <input class="coeff_input" id="effective_tdb_size" name="effective_tdb_size" size="4" type="text" value="{{ effective_tdb_size }}"/>
+	    <a class="helplink hiding" title="help" href="#" id="tdbsize-help"><span>[?]</span></a><br>
+	  </div>
+          <div toggle="tdbsize-help" class="hidden helpbox" id="htdbsize">
+	       Set the effective term database size for applying Bonferroni
+	       correction (i.e. calculating E-values) to P-values output by the
+	       algorithm. If the value set is 0 (default), the total number of
+	       terms considered is used.
+	  </div>
+	  <div class="input_field">
+	    <label for="stats">Statistics:</label>
+	    <select id="stats" name="stats">
+	      {% for txt, val in stats -%}
+	      {% if loop.first -%}
+	      <option selected="selected" value="{{ val }}">{{ txt }}</option>
+	      {% else -%}
+	      <option value="{{ val }}">{{ txt }}</option>
+	      {% endif -%}
+	      {%- endfor -%}
+	    </select>
+	    <a class="helplink hiding" title="help" href="#" id="stats-help"><span>[?]</span></a><br>
+	  </div>
+          <div toggle="stats-help" class="hidden helpbox" id="hstats">
+	    Set statistical method used to evaluate term enrichment statistics.
+	    <i>Lugananni-Rice</i> is the default SaddleSum method, while
+	    <i>One-sided Fisher's Exact test</i> is a widely used alternative
+	    that requires a cutoff (see below) to be set.
+	  </div>
+	  <h3>Weight Processing Parameters</h3>
+	  <div class="input_field">
+	    <label for="transform_weights">Transformation:</label>
+	    <select id="transform_weights" name="transform_weights">
+	      {% for txt,val in transform_weights -%}
+	      {% if loop.first -%}
+	      <option selected="selected" value="{{ val }}">{{ txt }}</option>
+	      {% else -%}
+	      <option value="{{ val }}">{{ txt }}</option>
+	      {% endif -%}
+	      {%- endfor -%}
+	    </select>
+	    <a class="helplink hiding" title="help" href="#" id="transform-help"><span>[?]</span></a><br>
+	  </div>
+          <div toggle="transform-help" class="hidden helpbox" id="htransform">
+	    Apply a transformation to each of the provided weights prior to
+	    other applying other processing options (see below) and
+	    calculating enrichment statistics.
+	  </div>
+	  <div class="input_field">
+	    <label for="cutoff_type">Apply cutoff:</label>
+	    <select id="cutoff_type" name="cutoff_type">
+	      {% for txt,val in cutoff_type -%}
+	      {% if loop.first -%}
+	      <option selected="selected" value="{{ val }}">{{ txt }}</option>
+	      {% else -%}
+	      <option value="{{ val }}">{{ txt }}</option>
+	      {% endif -%}
+	      {%- endfor -%}
+	    </select>
+	    <a class="helplink hiding" title="help" href="#" id="cutofft-help"><span>[?]</span></a><br>
+	  </div>
+          <div toggle="cutofft-help" class="hidden helpbox" id="hcutofft">
+	    Choose a type of cutoff to apply. The value of cutoff should be
+	    entered in the next field. <i>By rank</i> sets all weights ranked
+	    lower than the chosen value to 0. If there are several weights tied
+	    at the cutoff, keep all of them. <i>By weight</i>  sets all weights
+	    smaller than the chosen value to 0.
+	  </div>
+	  <div class="input_field">
+	    <label for="wght_cutoff">Cutoff value:</label>
+	    <input class="coeff_input" id="wght_cutoff" name="wght_cutoff" size="4" type="text" value=""/>
+	    <a class="helplink hiding" title="help" href="#" id="wcutoff-help"><span>[?]</span></a><br>
+	  </div>
+          <div toggle="wcutoff-help" class="hidden helpbox" id="hwcutoff">
+	    Enter the cutoff value. The interpretation of the value depends on
+	    the cutoff type chosen above.
+	  </div>
+	  <div class="input_field">
+	    <label for="discrete_weights">Discretize weights:</label>
+	    <input class="coeff_input" id="discrete_weights"  type="checkbox" name="discrete_weights" value="1"/>
+	    <a class="helplink hiding" title="help" href="#" id="discretize-help"><span>[?]</span></a><br>
+	  </div>
+          <div toggle="discretize-help" class="hidden helpbox" id="hdiscretize">
+	    Discretize weights. Set all weights greater than 0 to 1 and all
+	    those smaller than 0 to 0.
+	  </div>
+	  <h3>Output Parameters</h3>
+	  <div class="input_field">
+	    <label for="output">Output Format:</label>
+	    <select id="output" name="output">
+	      <option value="html" selected="selected">HTML with embedded image</option>
+	      <option value="txt">Plain text (without image)</option>
+	      <option value="tab">TAB-delimited (without image, full results)</option>
+	    </select>
+	    <a class="helplink hiding" title="help" href="#" id="output-help"><span>[?]</span></a>
+	  </div>
+	  <div toggle="output-help" class="helpbox hidden" id="hout">
+	    Choose output format for the results.
+	  </div>
+	  <div class="input_field">
+	    <label for="image_format">Image Format:</label>
+	    <select id="image_format" name="image_format">
+	      {% for txt,val in image_formats -%}
+	      {% if loop.first -%}
+	      <option selected="selected" value="{{ val }}">{{ txt }}</option>
+	      {% else -%}
+	      <option value="{{ val }}">{{ txt }}</option>
+	      {% endif -%}
+	      {%- endfor -%}
+	    </select>
+	    <a class="helplink hiding" title="help" href="#" id="imgf-help"><span>[?]</span></a>
+	  </div>
+	  <div toggle="imgf-help" class="helpbox hidden" id="himgf">
+	    Choose the format of the image showing the hierarchy of significant
+	    terms. The 'SVG in Navigator' format is best for viewing the image
+	    online while 'SVG' can be used to save the image.
+	  </div>
+	  <div class="input_field">
+	    <label for="color_map">Color Map:</label>
+	    <select id="color_map" name="color_map">
+	      {% for txt, val in colormaps -%}
+	      {% if loop.first -%}
+	      <option selected="selected" value="{{ val }}">{{ txt }}</option>
+	      {% else -%}
+	      <option value="{{ val }}">{{ txt }}</option>
+	      {% endif -%}
+	      {%- endfor -%}
+	    </select>
+	    <a class="helplink hiding" title="help" href="#" id="color-help"><span>[?]</span></a>
+      	  </div>
+      	  <div toggle="color-help" class="helpbox hidden" id="hcolor">
+	    Choose the color palette to color the nodes.
+	  </div>
+	  {%- if debug %}
+	  <input id="debug" name="debug" type="hidden" value="1"/>
+	  {%- endif -%}
+	</fieldset>
+	<div class="actionbar">
+	  <table id="action_bar">
+	    <tr>
+	      <td><input class="action_button" name="query" type="submit" value="Query"/></td>
+	      <td><input class="action_button" name="reset" type="reset" value="Reset"/></td>
+	      <td class="right_align"></td>
+	    </tr>
+	  </table>
+	</div>
+      </form>
+    </div>
+    <br>
+{%- endblock %}

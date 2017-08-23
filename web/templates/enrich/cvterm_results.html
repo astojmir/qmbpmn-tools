@@ -1,0 +1,85 @@
+{% extends "main_layout.html" %}
+{%- from "table.html" import striped_table -%}
+
+{%- set page_title = 'SaddleSum Term Enrichment Analysis' -%}
+{%- set sidebar_title = conf.enrich_sidebar_title %}
+{%- set sidebar_blocks = conf.enrich_sidebar_blocks %}
+{%- set banner_links = conf.enrich_banner_links %}
+
+
+{%- block extrahead %}
+    <script type="text/javascript" src="{{- conf.static_suffix|abspath -}}utils.js"></script>
+    <script type="text/javascript" src="{{- conf.static_suffix|abspath -}}toggle.js"></script>
+    <link type="text/css" href="{{- conf.static_suffix|abspath -}}qmbp-mn-app.css" rel="stylesheet" />
+{%- endblock %}
+{%- if not body_attrs -%}
+{%- set body_attrs = 'onload="Toggle._onload(); ao.load();"' %}
+{%- endif -%}
+
+{%- block sidebar %}
+    <div id="local">
+      <div class="content">
+        <p class="sidetitle">SaddleSum Query Results</p>
+        <div class="sidebarwrapper">
+	  <div class="sidebar">
+	    <h4><a href="#results">Results</a></h4>
+	    <ul>
+	      {% if img_tag -%}
+	      <li><a href="#graphic-summary">Graphic Summary</a></li>
+	      {% endif -%}
+	      {%- for key,ct in category_titles -%}
+	      <li><a href="#{{ key }}">{{ ct }}</a></li>
+	      {%- endfor -%}
+	      <li><a href="#query-summary">Query Summary</a></li>
+	    </ul>
+	  </div>
+        </div>
+      </div>
+    </div>
+{%- endblock %}
+
+
+{%- block contents %}
+<span class="sec_title" id="results">Controlled Vocabulary Term Enrichment</span>
+<div id="results_panel">
+  <div id="text_main">
+    {% if img_tag -%}
+    <div id="image_main">
+      <h3 id="graphic-summary">Graphic Summary</h3>
+      {{ img_tag }}
+    </div>
+    {% endif -%}
+    {% if not category_titles -%}
+    <p class="message_warning">No significant terms were found.</p>
+    {% endif -%}
+    {%- for key,ct in category_titles -%}
+    <h3 id="{{ key }}">{{ ct }}</h3>
+    {{ striped_table(tables[key]) }}
+    <br/>
+    {%- endfor -%}
+    <div id="text_header" class="toggles2">
+      <h3 id="query-summary">Query and Database Summary</h3>
+      {{ striped_table(input_summary) }}
+      {% if input_summary.warning_msgs -%}
+      <a class="showing grp-head" href="#" id="togwarnings">Warnings</a>
+      <div class="shown message_warning" id="warnings" toggle="togwarnings">
+	<ol>
+        {%- for row in input_summary.warning_msgs -%}
+          <li>{{ row }}</li>
+	{% endfor -%}
+	</ol>
+      </div>
+      {% endif -%}
+      {% if input_summary.unknown_ids_txt -%}
+      <a class="hiding grp-head" href="#" id="togunknownids">Unrecognized Identifiers</a>
+      <div class="hidden" id="unknownids" toggle="togunknownids">
+	<p>{{ input_summary.unknown_ids_txt }}</p>
+      </div>
+      {% endif -%}
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+
+

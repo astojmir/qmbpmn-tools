@@ -1,0 +1,9 @@
+{
+  "debug": true,
+  "site_root": "/Users/aleksand/data/qmbpmn_local/htdocs/",
+  "data_root": "/Users/aleksand/data/qmbpmn_local/data/",
+  "python_bin": "/sw/bin/python2.6",
+  "graphviz_path": "/sw/bin/",
+  "python_paths": ["/Users/aleksand/Work/Projects/python-dev-code"]
+}
+

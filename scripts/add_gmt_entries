@@ -1,0 +1,123 @@
+#! /usr//bin/env python
+#
+# ===========================================================================
+#
+#                            PUBLIC DOMAIN NOTICE
+#               National Center for Biotechnology Information
+#
+#  This software/database is a "United States Government Work" under the
+#  terms of the United States Copyright Act.  It was written as part of
+#  the author's official duties as a United States Government employee and
+#  thus cannot be copyrighted.  This software/database is freely available
+#  to the public for use. The National Library of Medicine and the U.S.
+#  Government have not placed any restriction on its use or reproduction.
+#
+#  Although all reasonable efforts have been taken to ensure the accuracy
+#  and reliability of the software and data, the NLM and the U.S.
+#  Government do not and cannot warrant the performance or results that
+#  may be obtained by using this software or data. The NLM and the U.S.
+#  Government disclaim all warranties, express or implied, including
+#  warranties of performance, merchantability or fitness for any particular
+#  purpose.
+#
+#  Please cite the author in any work or product based on this material.
+#
+# ===========================================================================
+#
+# Code author:  Aleksandar Stojmirovic
+#
+
+"""
+Produce JSON entries for GMT databases to be added to the config file.
+"""
+
+import sys
+
+species_codes = [('ath', 'Arabidopsis thaliana'),
+                 ('cel', 'Caenorhabditis elegans'),
+                 ('dre', 'Danio rerio'),
+                 ('dme', 'Drosophila melanogaster'),
+                 ('hsa', 'Homo sapiens'),
+                 ('mmu', 'Mus musculus'),
+                 ('pfa', 'Plasmodium falciparum'),
+                 ('rno', 'Rattus norvegicus'),
+                 ('sce', 'Saccharomyces cerevisiae'),
+                 ]
+
+GO_namespaces = ["biological_process",
+                 "cellular_component",
+                 "molecular_function",
+                 ]
+
+KEGG_namespaces = [None]
+
+TEMPLATE = \
+"""
+    [
+      ["name", "%s"],
+      ["dep_node_module", "qmbpmn.common.pkg.depnode_gmt"],
+      ["dep_node_class", "DepTdb2Gmt"],
+      ["prereqs", ["%s"]],
+      ["optionals", null],
+      ["docstring", "%s"],
+      ["hidden", true],
+      ["args", {
+        "storage_dir": "$INSTALL_PATH/GMT/",
+        "termdb_file": "%s",
+        "gmt_file": "%s",
+        "namespace": %s
+      }]
+    ],"""
+
+
+TEMPLATE_ALL = \
+"""
+    [
+      ["name", "gmt-all"],
+      ["dep_node_class", "DepNode"],
+      ["prereqs", [%s]],
+      ["optionals", null],
+      ["dep_node_module", "qmbpmn.common.pkg.gluelib"],
+      ["docstring", "GMT formatted - all."],
+      ["hidden", true],
+      ["args", {}]
+    ], """
+
+def do_all(species_codes):
+
+    names = []
+    for prefix,namespaces in [('GO', GO_namespaces),
+                              ('KEGG', KEGG_namespaces)]:
+        for species in species_codes:
+            for namespace in namespaces:
+                name = do_one(species, namespace, prefix)
+                names.append(name)
+
+    name_lst = ', '.join(['"%s"' % nm for nm in names])
+    sys.stdout.write(TEMPLATE_ALL % name_lst)
+
+def do_one(species, namespace, prefix):
+
+    prereqs = '%s-%s' % (prefix, species[0])
+    termdb_file = '%s.%s.tdb' % (species[1].replace(' ', '_'),
+                                 prefix.lower())
+    if namespace is None:
+        name = '%s-%s.gmt' % (prefix, species[0])
+        docstring = "GMT formatted %s: %s" % \
+                    (prefix, species[1])
+        namespace = 'null'
+
+    else:
+        ns =  ''.join([s[0] for s in namespace.split('_')])
+        name = '%s-%s-%s.gmt' % (prefix, ns, species[0])
+        docstring = "GMT formatted %s (%s): %s" % \
+                    (prefix, ns.upper(), species[1])
+        namespace = '"%s"' % namespace
+
+    sys.stdout.write(TEMPLATE % (name, prereqs, docstring,
+                                 termdb_file, name, namespace))
+
+    return name
+
+
+do_all(species_codes)

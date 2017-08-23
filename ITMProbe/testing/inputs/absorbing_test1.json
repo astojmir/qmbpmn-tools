@@ -1,0 +1,7 @@
+{
+        "model": "absorbing",
+                                "graph_path": "/home/stojmira/storage/data/qmbpmn-tools_datasets/update20110725/Saccharomyces_cerevisiae.Dnet.pkl",
+        "antisink_map": {"SLT2": 0.0, "NUP53": 0.0},
+        "sink_nodes": ["CDC42", "ELP3", "STE12"],
+        "df": 0.85
+}

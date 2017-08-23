@@ -1,0 +1,9 @@
+{
+        "model": "normalized-channel",
+        "graph_path": "/home/aleksand/data/qmbpmn_local/data/shared/Saccharomyces_cerevisiae.Dnet.pkl",
+        "antisink_map": {"SLT2": 0.0, "NUP53": 0.0},
+        "source_nodes": ["ELP3", "ESA1", "GCN5"],
+        "sink_nodes": ["RPO21", "POL2"],
+        "da": 6.0,
+        "df": null
+}

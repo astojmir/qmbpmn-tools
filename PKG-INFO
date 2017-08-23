@@ -1,0 +1,15 @@
+Metadata-Version: 1.1
+Name: qmbpmn-tools
+Version: 1.5.3
+Summary: Code from QMBP group for modelling information flow in networks.
+Home-page: http://www.ncbi.nlm.nih.gov/CBBresearch/Yu/
+Author: Aleksandar Stojmirovic and Yi-Kuo Yu
+Author-email: stojmira@ncbi.nlm.nih.gov
+License: Public Domain
+Description: UNKNOWN
+Platform: POSIX
+Classifier: Development Status :: 4 - Beta
+Classifier: Intended Audience :: Science/Research
+Classifier: Operating System :: POSIX
+Classifier: Programming Language :: Python
+Classifier: Topic :: Scientific/Engineering :: Bio-Informatics

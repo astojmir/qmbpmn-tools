@@ -1,0 +1,10 @@
+@data := SELECT property, value FROM shown_params ORDER BY rnk;
+
+@column_headers := SELECT NULL;
+
+@column_formats := SELECT fmt FROM
+                   (SELECT '{0}:' AS fmt, -1 as rnk UNION
+                    SELECT '{0}', 0  ORDER BY rnk);
+
+@title := SELECT 'Input Parameters';
+

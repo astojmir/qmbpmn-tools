@@ -1,0 +1,20 @@
+{
+  "CV Term Dataset": [
+    ["context_mngr_func", "kegg_with_ncbi_gene"], 
+    ["context_mngr_module", "qmbpmn.enrich.core.keggterms"], 
+    ["obj_level_url_fmt", "http://www.genome.jp/kegg-bin/show_pathway?org_name=%(org_prefix)s&amp;mapno=%(id)s&amp;mapscale=1.0&amp;show_description=show"], 
+    ["path_level_url_fmt", "http://www.genome.jp/kegg-bin/get_htext?htext=br08901.keg&amp;filedir=%%2ffiles&amp;extend=&amp;open=%(id)s"],
+    ["object_id_fmt", "%(symbol)s"], 
+    ["object_url_fmt", "http://www.ncbi.nlm.nih.gov/sites/entrez?db=gene&cmd=Retrieve&dopt=Graphics&list_uids=%(gene_id)s"],
+    ["object_desc_fmt", "%(description)s [ %(other_designations)s ]"]
+  ], 
+  "Graphics Options": {
+    "dot_kwargs": {
+      "relation_attr": {
+        "is_a": {
+          "color": "black"
+        }
+      }
+    }
+  }
+}

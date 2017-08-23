@@ -1,0 +1,112 @@
+{
+  "config_path": "",
+  "python_paths": [],
+
+  "site_url": "/",
+  "static_suffix": "static/",
+  "netmap_suffix": "netmap/",
+
+  "topnav_logo_links": [["NCBI", "http://www.ncbi.nlm.nih.gov"],
+                        ["QMBP", "http://www.ncbi.nlm.nih.gov/CBBresearch/Yu/index.html"]],
+
+  "navbar_links": [],
+  "footer_links": [],
+
+  "ITMProbe_htdocs_suffix": "itm_probe/",
+  "ITMProbe_doc_suffix": "doc/",
+  "ITMProbe_storage_dir": "itm_probe/",
+  "ITMProbe_network_dir": "shared/",
+
+  "ITMProbe_doc_source_dir": ["ITMProbe", "doc", "source"],
+
+  "ITMProbe_cvterm_full": true,
+
+  "ITMProbe_models": [["qmbpmn.web.ITMProbe.emitting",
+                       "EmittingModel",
+                       {"example_data": {"graph": 3,
+                                         "boundary": [["source_nodes", "SIR2"]]},
+                        "max_sources": 6}
+                      ],
+                      ["qmbpmn.web.ITMProbe.absorbing",
+                       "AbsorbingModel",
+                       {"example_data": {"graph": 3,
+                                         "boundary": [["sink_nodes", "ELP3"]]},
+                        "max_sinks": 6}
+                      ],
+                      ["qmbpmn.web.ITMProbe.nchannel",
+                       "NormChannelModel",
+                       {"example_data": {"graph": 3,
+                                         "boundary": [["source_nodes", "STE2 CDC42"],
+                                                      ["sink_nodes", "STE12"]]},
+                        "max_sources": 6,
+                        "max_sinks": 6}
+                      ]],
+
+  "ITMProbe_scripts": [["ITMProbe/itm_probe.cgi", "ITMProbe.cgi", {}]],
+  "ITMProbe_page_templates": [["ITMProbe/index.html", "index.html"]],
+
+
+  "ITMProbe_banner_links": ["ITM Probe", "index.html", "itm-banner"],
+
+  "ITMProbe_sidebar_title": "ITM Probe",
+
+  "ITMProbe_sidebar_blocks": [["WEB SERVICE",        "index.html", []],
+                              ["DOCUMENTATION", "index.html",
+                               [["Overview",        "overview.html"],
+                                ["Web Service",   "web_interface.html"],
+                                ["Cytoscape Plugin",   "cytoitmprobe.html"],
+                                ["Python Package - qmbpmn-tools",   "qmbpmn-tools.html"],
+                                ["Additional Information",      "additional.html"],
+                                ["Glossary",        "glossary.html"]]]],
+
+  "saddlesum_path": null,
+  "enrich_source_root": null,
+  "enrich_htdocs_suffix": "enrich/",
+  "enrich_storage_dir": "enrich/",
+  "enrich_termdb_dir": "shared/ETD",
+
+  "enrich_doc_source_dir": "doc/source",
+  "enrich_doc_suffix": "doc/",
+  "enrich_scripts": [["enrich/enrich.cgi", "enrich.cgi", {}]],
+
+  "enrich_page_templates": [["enrich/examples.html", "examples.html"]],
+
+  "enrich_banner_links": ["enrich", "index.html", "enrich-banner"],
+
+  "enrich_sidebar_title": "SaddleSum",
+
+  "enrich_sidebar_blocks": [["WEB SERVICE", null,
+                             [["Query Form",     "index.html"],
+                              ["Examples",       "examples.html"]]],
+                             ["DOWNLOAD",        null,
+                              [["Standalone Program and Cytoscape Plugin", "http://www.ncbi.nlm.nih.gov/CBBresearch/Yu/downloads/saddlesum.html"]]],
+                              ["DOCUMENTATION", "documentation.html",
+                               [["Overview",        "overview.html"],
+                                ["Standalone Program", "standalone_version.html"],
+                                ["Web Service",      "web_version.html"],
+                                ["Cytoscape Plugin", "cytosaddlesum.html"],
+                                ["Additional Information", "additional.html"]]]],
+
+  "enrich_examples": [{"page": "example_GDS3184_GSM253560.html",
+                       "title": "GDS3184/GSM253560 (up regulated)",
+                       "description": "Analysis of testes of males exposed to methoxyacetic acid for up to 24 hours.",
+                       "species": "Rattus norvegicus",
+                       "database": "Rattus_norvegicus.etd",
+                       "cutoff_Evalue": "0.01",
+                       "filename": "examples/GDS3184_GSM253560_up_geneid.tab"},
+                      {"page": "example_GDS2352_GSM89756.html",
+                       "title": " GDS2352/GSM89756 (up regulated)",
+                       "description": "Analysis of resting Jurkat T cells and derived mutants lacking T cell receptor (TCR) signaling proteins.",
+                       "species": "Homo sapiens",
+                       "database": "Homo_sapiens.etd",
+                       "cutoff_Evalue": "0.1",
+                       "filename": "examples/GDS2352_GSM89756_up_geneid.tab"},
+                      {"page": "example_GDS2338_GSM102668.html",
+                       "title": "GDS2338_GSM102668 (down regulated)",
+                       "description": "Caffeine and rapamycin effect on various wild type strains",
+                       "species": "Saccharomyces cerevisiae",
+                       "database": "Saccharomyces_cerevisiae.etd",
+                       "cutoff_Evalue": "0.01",
+                       "filename": "examples/GDS2338_GSM102668_down_geneid.tab"}]
+}
+

@@ -1,0 +1,53 @@
+{% extends "main_layout.html" %}
+{%- set page_title = 'SaddleSum - Examples' %}
+{%- set sidebar_title = conf.enrich_sidebar_title %}
+{%- set sidebar_blocks = conf.enrich_sidebar_blocks %}
+{%- set banner_links = conf.enrich_banner_links %}
+{%- set contents_class = 'qmbpmn-docs' %}
+
+{%- block extrahead %}
+    <link type="text/css" href="{{- conf.static_suffix|abspath -}}qmbp-mn-tbl.css" rel="stylesheet" />
+{%- endblock %}
+{%- if not body_attrs -%}
+{%- set body_attrs = 'onload="ao.load();"' %}
+{%- endif -%}
+
+
+{%- block contents %}
+<h1>SaddleSum Examples</h1>
+
+<p>Click on the links below to access the SaddleSum query pages filled with the
+  log2 ratios of gene expressions, taken from selected microarrays from
+  the <a href="http://www.ncbi.nlm.nih.gov/gds">NCBI GEO database</a>.</p>
+
+      <table id="examples_table" class="striped" id="examples_table">
+        <thead><tr><th>Example</th><th>Species</th><th>Description</th></tr></thead>
+        <tbody>
+	{%- for ex in conf.enrich_examples %}
+	<tr class="{{ loop.cycle('row1','row2') }}">
+	  <td><a href="{{- conf.enrich_htdocs_suffix|abspath -}}{{- ex.page -}}">{{ ex.title }}</a></td>
+	  <td>{{ ex.species }}</td>
+          <td>{{ ex.description }}</td>
+	</tr>
+	{%- endfor %}
+        </tbody>
+      </table>
+
+<p>You can obtain additional examples by running an
+<a href="{{- conf.ITMProbe_htdocs_suffix|abspath -}}index.html">ITM Probe</a> model and
+submitting the results to SaddleSum using the query form at the bottom of the
+results page</p>
+
+<p>Note that SaddleSum performs a one-sided test only, giving E-value for scores
+  being greater than a given score. Hence, to test for down regulated genes, it
+  is necessary to flip the sign of the weights. If two sided test is desired,
+  take the absolute value of the weights before submitting.</p>
+
+<p>Also note that in each example, the weights below 0 are set to 0. We found
+  (see the paper) that doing so improves results for microarray data. The genes
+  with weights below 0 are retained to provide statistical background but they
+  do not affect the score.</p>
+
+{%- endblock %}
+
+

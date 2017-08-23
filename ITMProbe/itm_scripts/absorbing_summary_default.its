@@ -1,0 +1,20 @@
+$tmp2$ := CREATE TEMPORARY TABLE IF NOT EXISTS connected AS
+            SELECT count(*) - (SELECT max(sinkid)+1 FROM sinks) AS val
+            FROM results WHERE total_content > 0.0;
+
+@data := SELECT qty, val FROM
+           (SELECT 'Total nodes connected to sinks' AS qty, val, 0 AS rnk
+              FROM connected UNION
+            SELECT 'Average likelihood of reaching sinks', (sum(F.val) - (max(F.sinkid) + 1)) / (SELECT * FROM connected), 1
+            FROM F)
+            ORDER by rnk;
+
+@column_headers := SELECT name FROM
+                   (SELECT 'Quantity' AS name, -1 as rnk UNION
+                    SELECT 'Value', 0 ORDER BY rnk);
+
+@column_formats := SELECT fmt FROM
+                   (SELECT '{0}:' AS fmt, -1 as rnk UNION
+                    SELECT '{0:.2f}', 0  ORDER BY rnk);
+
+@title := SELECT 'Summary';

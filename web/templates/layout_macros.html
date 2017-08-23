@@ -1,0 +1,122 @@
+{%- macro mn_topnav(topnav_logo_links, banner_links) %}
+      <div id="topnav">
+	<div id="qmbplogo">
+	  <h1><a href="{{ topnav_logo_links[1][1]|abspath }}">{{ topnav_logo_links[1][0] }}</a></h1>
+	</div>
+	<div class="banner">
+	  <h1><a id="{{ banner_links[2] }}" href="{{ banner_links[1]|abspath }}">{{ banner_links[0] }}</a></h1>
+	</div>
+	<div id="ncbilogo">
+	  <h1><a href="{{ topnav_logo_links[0][1]|abspath }}">{{ topnav_logo_links[0][0] }}</a></h1>
+	</div>
+      </div>
+{%- endmacro %}
+{%- macro sidebar_links(sidebar_blocks) %}
+	<div class="qmbpsidebar">
+          {%- for title, href, children in sidebar_blocks -%}
+	  {% if href -%}
+	  <h4><a href="{{ href|abspath }}">{{ title }}</a></h4>
+	  {%- else -%}
+	  <h4>{{ title }}</h4>
+	  {%- endif -%}
+	  <ul>
+            {% for title2, href2 in children -%}
+	    <li><a href="{{ href2|abspath }}">{{ title2 }}</a></li>
+            {% endfor -%}
+	  </ul>
+          {% endfor -%}
+	</div>
+{%- endmacro %}
+{%- macro mn_navbar(navbar_links) %}
+    {%- if navbar_links %}
+    <div id="navbar">
+      <div class="content">
+	<ul id="top_left">
+	  {% for  title, href  in navbar_links -%}
+	  {% if loop.first -%}
+	  <li class="begin"><a href="{{ href|abspath }}">{{ title }}</a></li>
+	  {% else -%}
+	  <li><a href="{{ href|abspath }}">{{ title }}</a></li>
+	  {% endif -%}
+	  {% endfor -%}
+	</ul>
+      </div>
+    </div>
+    {%- endif %}
+{%- endmacro %}
+{%- macro mn_btmnav(footer_links, maintainer, updated) %}
+    <hr class="cclr" />
+    <div class="cfoo">
+      {%- if footer_links %}
+	{% for  title, href  in footer_links -%}
+	{% if loop.last -%}
+	<a href="{{ href|abspath }}">{{ title }}</a><br />
+	{% else -%}
+	<a href="{{ href|abspath }}">{{ title }}</a> |
+	{% endif -%}
+	{% endfor -%}
+      {%- endif %}
+      <span id="update_msg" class="caut">
+	{%- if maintainer %}
+	Maintained by {{ maintainer }}.
+	{%- endif %}
+	{%- if updated %}
+	Last update: {{ updated }}.
+	{%- endif %}
+      </span>
+    </div>
+{%- endmacro %}
+{%- macro sitemap_links(link_blocks) %}
+<div class="clpn">
+      {%- for title, href, children in link_blocks -%}
+      {% set root_item_id = 'gtgl' ~ loop.index %}
+      {% if children -%}
+      <div id="{{ root_item_id ~ 'a' }}" class="ctgl expanded">
+      {%- else -%}
+      <div id="{{ root_item_id ~ 'a' }}" class="ctgl none">
+      {%- endif -%}
+        <div class="cover">
+	  {% if loop.first -%}
+          {% set ttype = 'ca1' %}
+	  {% elif loop.last -%}
+          {% set ttype = 'ca2' %}
+          {%- else -%}
+          {% set ttype = 'ca3' %}
+          {%- endif -%}
+          {% if children -%}
+          <a id="{{ root_item_id }}" class="{{ ttype }}" href="#"></a>
+          {%- else -%}
+          <span class="{{ ttype }}"></span>
+          {%- endif -%}
+          {% if href -%}
+          <a href="{{ href|abspath }}" class="ctgl">{{ title }}</a>
+          {%- else -%}
+          <a class="ctgl">{{ title }}</a>
+          {%- endif -%}
+        </div>
+      {% if children -%}
+        <div id="{{ root_item_id ~ 'b' }}" class="ctgldiv cback opened">
+          {% for title2, href2 in children -%}
+          <div id="{{ root_item_id ~ '_' ~ loop.index ~ 'a'}}" class="ctgl none">
+            <div class="cover">
+	      {% if loop.first -%}
+              <span class="ca1"></span>
+	      {% elif loop.last -%}
+              <span class="ca2"></span>
+              {%- else -%}
+              <span class="ca3"></span>
+              {%- endif -%}
+              {% if href -%}
+              <a href="{{ href2|abspath }}" class="ctgl">{{ title2 }}</a>
+              {%- else -%}
+              <a class="ctgl">{{ title2 }}</a>
+              {%- endif -%}
+            </div>
+          </div>
+          {% endfor -%}
+        </div>
+      {%- endif -%}
+      </div>
+      {% endfor -%}
+    </div>
+{%- endmacro %}

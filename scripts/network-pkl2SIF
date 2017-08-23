@@ -1,0 +1,99 @@
+#! /usr/bin/env python
+#
+# ===========================================================================
+#
+#                            PUBLIC DOMAIN NOTICE
+#               National Center for Biotechnology Information
+#
+#  This software/database is a "United States Government Work" under the
+#  terms of the United States Copyright Act.  It was written as part of
+#  the author's official duties as a United States Government employee and
+#  thus cannot be copyrighted.  This software/database is freely available
+#  to the public for use. The National Library of Medicine and the U.S.
+#  Government have not placed any restriction on its use or reproduction.
+#
+#  Although all reasonable efforts have been taken to ensure the accuracy
+#  and reliability of the software and data, the NLM and the U.S.
+#  Government do not and cannot warrant the performance or results that
+#  may be obtained by using this software or data. The NLM and the U.S.
+#  Government disclaim all warranties, express or implied, including
+#  warranties of performance, merchantability or fitness for any particular
+#  purpose.
+#
+#  Please cite the author in any work or product based on this material.
+#
+# ===========================================================================
+#
+# Code author:  Aleksandar Stojmirovic
+#
+
+"""
+Converts a network in qmbpmn-tools pickled format into Cytoscape SIF format.
+
+SYNOPSIS:
+
+    network-pkl2SIF network_cfg_file output_prefix
+    network-pkl2SIF -h|--help
+
+ARGUMENTS:
+
+    network_cfg_file - a network configuration file in JSON format produced by
+                       package manager. It in turn points to the pickled graph.
+    output_prefix    - the prefix for output files
+
+OUTPUT:
+
+Two files are output for use in Cytoscape: a network SIF file
+<output_prefix>.sif, with node IDs as NCBI Gene IDs, and a nodes attribute file
+<output_prefix>-names.NA containing the canonical names as the canonicalName
+node attribute.
+"""
+
+import sys
+import getopt
+from qmbpmn.ITMProbe.www import network
+from collections import defaultdict
+
+
+def write_node_symbols(net, fp=sys.stdout):
+
+    fp.write('canonicalName (class=String)\n')
+    gn = net.genes
+    for gid, smb in zip(gn.gene_ids, gn.symbols):
+        fp.write('%d = %s\n' % (gid, smb))
+
+def pkl2sif(network_cfg_file, output_prefix):
+
+    out_sif = '%s.sif' % output_prefix
+    out_NA = '%s-names.NA' % output_prefix
+
+    net = network.ITMProbeNetwork(network_cfg_file)
+    with open(out_sif, 'wb') as fp:
+        net.to_sif_file(fp)
+    with open(out_NA, 'wb') as fp:
+        write_node_symbols(net, fp)
+
+if __name__ == "__main__":
+
+    options = 'h'
+    long_options = ['help']
+
+    try:
+        opts, args = getopt.getopt(sys.argv[1:], options,
+                                   long_options)
+        for o, a in opts:
+            if o in ("-h", "--help"):
+                print __doc__
+                sys.exit()
+
+        if len(args) < 2:
+            print __doc__
+            sys.exit()
+
+        pkl2sif(args[0], args[1])
+
+    except getopt.GetoptError:
+        # print help information and exit:
+        print __doc__
+        sys.exit(2)
+

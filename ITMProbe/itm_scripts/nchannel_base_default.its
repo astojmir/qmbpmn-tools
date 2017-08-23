@@ -1,0 +1,37 @@
+$tmp1$ := CREATE TEMPORARY TABLE IF NOT EXISTS potential AS
+            SELECT nodes.nodeid AS nodeid,
+                   sum(F.val) AS val
+            FROM nodes, F
+            WHERE F.nodeid=nodes.nodeid
+            GROUP BY F.nodeid;
+
+$tmp2$ := CREATE TEMPORARY TABLE IF NOT EXISTS Phi AS
+              SELECT H.sourceid, H.nodeid, H.val * potential.val AS val
+               FROM H, potential WHERE H.nodeid=potential.nodeid;
+
+$tmp3$ := CREATE TEMPORARY TABLE IF NOT EXISTS Fs AS
+              SELECT sources.sourceid, potential.val
+               FROM sources, potential WHERE sources.nodeid=potential.nodeid;
+
+$tmp4$ := CREATE TEMPORARY TABLE IF NOT EXISTS PhiK AS
+            SELECT Phi.sourceid AS sourceid, Phi.nodeid AS nodeid, Phi.val / Fs.val AS val FROM
+              Phi, Fs WHERE Phi.sourceid=Fs.sourceid;
+
+$sourcecols$ := SELECT group_concat(srccol(sourceid, 'PhiK')) FROM sources;
+$datacols$ := CREATE TEMPORARY TABLE IF NOT EXISTS datacols AS
+                SELECT 'datacol' || sourceid AS colid FROM sources;
+
+$tmp5$ := CREATE TEMPORARY TABLE IF NOT EXISTS results AS
+            SELECT nodes.name AS name,
+                   $sourcecols$,
+                   (max(PhiK.sourceid) + 1) * min(PhiK.val) AS interference,
+                   sum(PhiK.val) AS total_content
+            FROM nodes, PhiK
+            WHERE PhiK.nodeid=nodes.nodeid
+            GROUP BY PhiK.nodeid
+            ORDER BY $orderby$ DESC;
+
+$limit$ := SELECT CASE WHEN $usepr$ THEN
+             (SELECT CAST (min(round(participation_ratio($orderby$)),$maxrows$) AS INTEGER)
+                FROM results)
+             ELSE $maxrows$ END;

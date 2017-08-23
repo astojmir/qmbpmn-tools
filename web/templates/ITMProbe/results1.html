@@ -1,0 +1,32 @@
+{% extends "main_layout.html" %}
+
+{%- set sidebar_title = conf.ITMProbe_sidebar_title %}
+{%- set page_title = 'ITM Probe results' %}
+{%- set sidebar_blocks = conf.ITMProbe_sidebar_blocks %}
+{%- set banner_links = conf.ITMProbe_banner_links %}
+
+{%- block extrahead %}
+    <link type="text/css" href="{{- conf.static_suffix|abspath -}}qmbp-mn-app.css" rel="stylesheet">
+    <meta http-equiv="refresh" content="0;URL={{ rendering_url }}">
+{%- endblock %}
+{%- if not body_attrs -%}
+{%- set body_attrs = 'onload="ao.load();"' %}
+{%- endif -%}
+
+{% block contents %}
+{% if warning_msgs -%}
+<div class="toggles2">
+  <a class="showing grp-head" href="#" id="togwarnings">Warnings</a>
+  <div class="shown message_warning" id="warnings" toggle="togwarnings">
+    <ol>
+    {%- for row in warning_msgs -%}
+      <li>{{ row }}</li>
+    {% endfor -%}
+    </ol>
+  </div>
+</div>
+{% endif -%}
+<p>Rendering query results for Query ID {{ query_id }}. Please wait.</p>
+{% endblock %}
+
+

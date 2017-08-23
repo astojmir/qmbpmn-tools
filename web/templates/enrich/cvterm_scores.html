@@ -1,0 +1,67 @@
+{% extends "main_layout.html" %}
+{%- from "table.html" import striped_table -%}
+
+{%- set page_title = 'SaddleSum Term Summary' -%}
+{%- set sidebar_title = conf.enrich_sidebar_title %}
+{%- set sidebar_blocks = conf.enrich_sidebar_blocks %}
+{%- set banner_links = conf.enrich_banner_links %}
+
+
+{%- block extrahead %}
+    <script type="text/javascript" src="{{- conf.static_suffix|abspath -}}utils.js"></script>
+    <script type="text/javascript" src="{{- conf.static_suffix|abspath -}}toggle.js"></script>
+    <link href="{{- conf.static_suffix|abspath -}}qmbp-mn-app.css" rel="stylesheet" type="text/css"/>
+{%- endblock %}
+{%- if not body_attrs -%}
+{%- set body_attrs = 'onload="Toggle._onload(); ao.load(); window.focus();"' %}
+{%- endif -%}
+
+
+{%- block sidebar %}
+    <div id="local">
+      <div class="content">
+        <p class="sidetitle">SaddleSum Term Details</p>
+        <div class="sidebarwrapper">
+	  <div class="sidebar">
+	    <h4><a href="#term-summary">Term Summary</a></h4>
+	    <h4><a href="#top-scores">Associations</a></h4>
+	    <ul>
+	      <li><a href="#top-scores">Top Scoring</a></li>
+	      {% if tables.other_scores.body -%}
+	      <li><a href="#tog-other-scores">Other</a></li>
+	      {% endif -%}
+	    </ul>
+	  </div>
+        </div>
+      </div>
+    </div>
+{%- endblock %}
+
+
+{%- block contents %}
+<span class="sec_title" id="top-results">Controlled Vocabulary Term Details</span>
+<div id="results_panel">
+  <div id="text_main">
+    <div id="text_header">
+      <h3 id="term-summary">Term Summary</h3>
+      {{ striped_table(tables.summary) }}
+    </div>
+    <br/>
+    <h3 id="top-scores">Top Scoring Entities</h3>
+    {{ striped_table(tables.top_scores) }}
+    {% if tables.other_scores.body -%}
+    <br/>
+    <div class="toggles2">
+      <a class="hiding grp-head" href="#" id="tog-other-scores">Other Associated Entities</a>
+      <div class="hidden" id="other-scores" toggle="tog-other-scores">
+	{{ striped_table(tables.other_scores) }}
+      </div>
+    </div>
+    {% endif -%}
+  </div>
+</div>
+<br/>
+{% endblock %}
+
+
+

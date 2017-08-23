@@ -1,0 +1,122 @@
+{% extends "main_layout.html" %}
+{%- from "table.html" import actionbar -%}
+{%- from "ITMProbe/display_panel.html" import display_panel -%}
+
+{%- set sidebar_title = conf.ITMProbe_sidebar_title %}
+{%- set sidebar_blocks = conf.ITMProbe_sidebar_blocks %}
+{%- set banner_links = conf.ITMProbe_banner_links %}
+{%- set model_actionbar = [("document.query_form.submit()","Run",'run'), ("resetParams()","Reset",'reset1'), ("fillExample()","Example",'example1')] -%}
+
+{%- if not page_title -%}
+{%- set page_title = 'ITM Probe: %s'|format(model.html_text) %}
+{%- endif -%}
+
+{%- if not body_attrs -%}
+{%- set body_attrs = 'onload="setupPage(); Toggle._onload(); ao.load();"' %}
+{%- endif -%}
+
+{%- block extrahead %}
+    <link  type="text/css" href="{{- conf.static_suffix|abspath -}}qmbp-mn-app.css" rel="stylesheet">
+    <script type="text/javascript" src="{{- conf.static_suffix|abspath -}}utils.js"></script>
+    <script type="text/javascript" src="{{- conf.static_suffix|abspath -}}toggle.js"></script>
+    <script type="text/javascript" src="{{- conf.static_suffix|abspath -}}itm_probe.js"></script>
+    <script type="text/javascript">
+      var example_data = {{ example_data|jsonencode }};
+      var graph_list = {{ graph_data|jsonencode }};
+      var clientState = {{ display_data|jsonencode }};
+    </script>
+{%- endblock %}
+
+{% block contents %}
+
+{%- block params_panel %}
+<form action="ITMProbe.cgi" id="query_form" method="POST" name="query_form" target="_blank" enctype="multipart/form-data">
+  <input type="hidden" name="view" value="0">
+  <span class="sec_title">Model Parameters</span>
+  <div id="params_panel">
+    {%- block graph_params %}
+    <div id="graph_params">
+      <fieldset>
+	<legend>Interaction Network</legend>
+	<h3>Interaction Network</h3>
+	{% if false -%}
+	<div class="input_field">
+	  <label for="netgroup">Network Group:</label>
+	  <select class="graph" id="netgroup" name="netgroup" onchange="groupChange(this.selectedIndex);">
+	    {% for txt,val in net_groups -%}
+	    {% if loop.first -%}
+	    <option selected="selected" value="{{ val }}">{{ txt }}</option>
+	    {% else -%}
+	    <option value="{{ val }}">{{ txt }}</option>
+	    {% endif -%}
+	    {% endfor -%}
+	  </select>
+	  <a class="helplink hiding" title="help" href="#" id="netgroup-help"><span>[?]</span></a>
+	</div>
+        <div toggle="netgroup-help" class="hidden helpbox" id="hnetgrp">
+	  Select a network group - available interaction graphs are divided into groups by
+	  topic for easier selection. Each group selection enables different networks
+	  under 'Interaction Graph'.
+        </div>
+	{% endif -%}
+	<div class="input_field">
+	  <label for="graph">Interaction Graph:</label>
+	  <select class="graph" id="graph" name="graph" onchange="graphChange(this.selectedIndex);">
+	    {% for graph in graph_data -%}
+	    {% if loop.first -%}
+	    <option selected="selected" group="{{ graph.group }}" value="{{ graph.value }}">{{ graph.text }}</option>
+	    {% else -%}
+	    <option group="{{ graph.group }}" value="{{ graph.value }}">{{ graph.text }}</option>
+	    {% endif -%}
+	    {% endfor -%}
+	  </select>
+	  <a class="helplink hiding" title="help" href="#" id="graph-help"><span>[?]</span></a>
+	</div>
+        <div toggle="graph-help" class="hidden helpbox" id="hgrph">
+	    Select the
+	    <a href="doc/glossary.html#term-interaction-network" target="qmbp-help">
+	    interaction network</a> for the query.
+	    <a href="doc/modelopts.html#interaction-graph" target="qmbp-help" >more...</a>
+        </div>
+	<div class="input_field">
+	  <label for="antisink_map" id="excluded">Excluded Nodes: enter here</label>
+	  <a class="helplink hiding" title="help" href="#" id="excluded-help"><span>[?]</span></a><br>
+          <div toggle="excluded-help" class="hidden helpbox" id="hexcl">
+	    Enter the list of nodes (proteins) to
+	    <a href="doc/glossary.html#term-excluded-node" target="qmbp-help">exclude</a>
+	    from the graph. The nodes can be entered as NCBI Gene IDs or canonical gene
+	    symbols appropriate for the selected network. Identifiers may be separated by spaces,
+	    commas, semicolons, tabs or line breaks. The unrecognised identifiers are ignored and
+	    a warning is printed. Note that the identifiers uploaded from the file are appended
+	    to those entered through the form.
+          </div>
+	  <textarea cols="50" id="antisink_map" name="antisink_map" rows="3">{{ graph_data[0].antisinks }}</textarea>
+	  <br>
+	  <label for="antisink_map2" id="excluded2">or submit a file</label>
+	  <a class="helplink hiding" title="help" href="#" id="excludedfile-help"><span>[?]</span></a><br>
+        <div toggle="excludedfile-help" class="hidden helpbox" id="hexclf">
+	  Upload a text file with the list of proteins to
+	  <a href="doc/glossary.html#term-excluded-node" target="qmbp-help">exclude</a>
+	  from the graph. The nodes
+	  can be entered as NCBI Gene IDs or canonical gene symbols appropriate for the selected
+	  network. Identifiers may be separated by (one or many) spaces, commas, semicolons, tabs or
+	  line breaks. The unrecognised identifiers are ignored and a warning is printed. Note that
+	  the identifiers uploaded from the file are appended to those entered through the form.
+        </div>
+	  <input type="hidden" name="MAX_FILE_SIZE" value="128">
+	  <input type="file" accept="text/plain" class="nodes_input" id="antisink_map2" name="antisink_map2">
+	</div>
+      </fieldset>
+    </div>
+    {% endblock %}
+    {%- block model_params %}
+    {% endblock %}
+  {{ actionbar(model_actionbar) }}
+  </div>
+  <br>
+{%- endblock %}
+  {{ display_panel(display_data, image_processors, false) | indent(2, false) }}
+</form>
+{% endblock %}
+
+

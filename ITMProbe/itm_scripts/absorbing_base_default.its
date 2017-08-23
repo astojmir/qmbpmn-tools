@@ -1,0 +1,14 @@
+$sinkcols$ := SELECT group_concat(snkcol(sinkid, 'F')) FROM sinks;
+$datacols$ := CREATE TEMPORARY TABLE IF NOT EXISTS datacols AS
+                SELECT 'datacol' || sinkid AS colid FROM sinks;
+
+$tmp$ := CREATE TEMPORARY TABLE IF NOT EXISTS results AS
+           SELECT nodes.name AS name,
+                  $sinkcols$,
+                  sum(F.val) AS total_content
+           FROM nodes JOIN F
+           ON F.nodeid=nodes.nodeid
+           GROUP BY F.nodeid
+           ORDER BY $orderby$ DESC;
+
+$limit$ := SELECT $maxrows$;

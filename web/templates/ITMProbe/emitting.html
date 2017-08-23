@@ -1,0 +1,53 @@
+{% extends "ITMProbe/model.html" %}
+{%- if not page_title -%}
+{%- set page_title = 'ITM Probe: Emitting Model' %}
+{%- endif -%}
+{%- block model_params %}
+    <div id="model_params">
+      <fieldset>
+	<legend>Emitting Model Parameters</legend>
+	<h3>Emitting Model Parameters</h3>
+	<div class="input_field">
+	  <label for="source_nodes">Sources (max. 6):</label>
+	  <input class="nodes_input" id="source_nodes" name="source_nodes" type="text">
+	  <a class="helplink hiding" title="help" href="#" id="sources-help"><span>[?]</span></a>
+	</div>
+        <div toggle="sources-help" class="helpbox hidden" id="hsrc">
+	  Enter up to six origins of the random walks (information flow) as NCBI
+	  Gene IDs or canonical gene symbols appropriate for the selected
+	  network. Identifiers may be separated by spaces, commas, semicolons,
+	  tabs or line breaks. At least one source must be specified for the emitting model.
+        </div>
+
+	<fieldset class="dissipation_choice">
+	  <legend>Dissipation Criterion (choose one):</legend>
+	  <div class="optline">
+	    <ul>
+	      <li><input class="dfrad" type="radio" name="dfcrit" value="df" checked="checked"></li>
+	      <li><label for="df">Termination (dissipating) probability:</label></li>
+	      <li><input class="coeff_input" id="df" name="df" type="text" value="0.15"></li>
+	      <li><a class="helplink hiding" title="help" href="#" id="df-help"><span>[?]</span></a></li>
+	    </ul>
+	  </div>
+          <div toggle="df-help" class="hidden helpbox" id="hdf">
+	    Enter the probability for a random walk to terminate (dissipate) at each step.
+	    Allowed values range from 0.0 to 1.0.
+	    <a href="doc/modelopts.html#emitting-model" target="qmbp-help" >more...</a>
+          </div>
+	  <div class="optline">
+	    <ul>
+	      <li><input class="dfrad" type="radio" name="dfcrit" value="da"></li>
+	      <li><label for="da">Average path length:</label></li>
+	      <li><input class="coeff_input" id="da" name="da" type="text" value="5.0"></li>
+	      <li><a class="helplink hiding" title="help" href="#" id="da-help"><span>[?]</span></a></li>
+	    </ul>
+	  </div>
+          <div toggle="da-help" class="hidden helpbox" id="hda">
+	    Enter the average number of steps a random walk takes before terminating.
+	    <a href="doc/modelopts.html#emitting-model" target="qmbp-help" >more...</a>
+          </div>
+	</fieldset>
+      </fieldset>
+    </div>
+    <input id="model_type" name="model_type" type="hidden" value="emitting">
+{% endblock %}

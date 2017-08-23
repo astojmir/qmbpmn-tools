@@ -1,0 +1,40 @@
+The code for qmbpmn-tools was written by Aleksandar Stojmirovic and Alexander
+Bliskovsky. It is placed into Public Domain (see LICENSE file), with the
+following exceptions:
+
+* The files in common/commandtools were taken from the CommandTool package by
+  James Gardner. See common/commandtools/LICENSE.txt for their license.
+
+* Some code in common/graph/dmatrix.py was taken from
+  http://aspn.activestate.com/ASPN/Cookbook/Python/Recipe/117228 written by
+  David Eppstein. It is governed by the Python Software Foundation (PSF)
+  license (http://www.python.org/psf/license/).
+
+* common/pkg/progressbar.py was written by Nilton Volpato and licensed under
+  the GNU Lesser General Public License.
+
+* common/pyparsing.py was written by Paul T. McGuire and released under the MIT
+  license.
+
+* common/pydot.py was written by Ero Carrera  and released under the MIT
+  license.
+
+* common/dot_parser.py was written by Michael Krause  and released under the MIT
+  license.
+
+* The Javascript files in web/netmap were authored by Andreas Neumann  and
+  licensed under the  GNU Lesser General Public License.
+
+* Color schemes in common/graphics/colormaps.py and
+  common/graphics/ColorBrewer.txt were  taken from the www.ColorBrewer.org site
+  by Cynthia A. Brewer, Geography, Pennsylvania State University.
+
+
+The research leading to ITM Probe (part of qmbpmn-tools) was performed by
+Aleksandar Stojmirovic and Yi-Kuo Yu. Please cite
+
+1. Stojmirovic A, Yu YK (2009) ITM Probe: analyzing information flow in protein
+   networks. Bioinformatics, 25: 2447-9.
+
+2. Stojmirovic A, Yu YK (2007) Information flow in interaction networks.
+   J Comput Biol, 14: 1115-43.

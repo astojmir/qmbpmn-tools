@@ -1,0 +1,92 @@
+#! /usr/bin/env python
+#
+# ===========================================================================
+#
+#                            PUBLIC DOMAIN NOTICE
+#               National Center for Biotechnology Information
+#
+#  This software/database is a "United States Government Work" under the
+#  terms of the United States Copyright Act.  It was written as part of
+#  the author's official duties as a United States Government employee and
+#  thus cannot be copyrighted.  This software/database is freely available
+#  to the public for use. The National Library of Medicine and the U.S.
+#  Government have not placed any restriction on its use or reproduction.
+#
+#  Although all reasonable efforts have been taken to ensure the accuracy
+#  and reliability of the software and data, the NLM and the U.S.
+#  Government do not and cannot warrant the performance or results that
+#  may be obtained by using this software or data. The NLM and the U.S.
+#  Government disclaim all warranties, express or implied, including
+#  warranties of performance, merchantability or fitness for any particular
+#  purpose.
+#
+#  Please cite the author in any work or product based on this material.
+#
+# ===========================================================================
+#
+# Code author:  Aleksandar Stojmirovic
+#
+
+"""
+Convert gene symbols in tab-separated weights file to cannonical symbols,
+printing updated version to stdout.
+
+SYNOPSIS:
+
+    normalize_weights  weights_file ncbi_gene_file ncbi_gene_index_file
+    normalize_weights -h|--help
+
+"""
+
+from __future__ import with_statement
+import sys
+import getopt
+from qmbpmn.common.db_parsers.ncbi_gene import NCBIGenes
+
+
+def normalize_weights(weights_file, gene_info_file, gene_info_index):
+
+   with open(gene_info_file, 'r') as gene_info_fp:
+      genes = NCBIGenes(gene_info_fp, gene_info_index)
+
+      with open(weights_file, 'r') as weights_fp:
+         for line in weights_fp:
+            fields = line.split('\t')
+            old_symbol = fields[0]
+            try:
+               rec = genes.get_record(symbol=old_symbol)
+               fields[0] = rec.symbol
+               sys.stdout.write('\t'.join(fields))
+            except:
+               pass
+
+
+if __name__ == "__main__":
+
+    options = 'h'
+    long_options = ['help']
+    namespace = None
+
+    try:
+        opts, args = getopt.getopt(sys.argv[1:], options,
+                                   long_options)
+        for o, a in opts:
+            if o in ("-h", "--help"):
+                print __doc__
+                sys.exit()
+
+        if len(args) < 3:
+            print __doc__
+            sys.exit()
+
+        weights_file, gene_info_file, gene_info_index = args[:3]
+
+    except getopt.GetoptError:
+        # print help information and exit:
+        print __doc__
+        sys.exit(2)
+
+    normalize_weights(weights_file, gene_info_file, gene_info_index)
+
+
+

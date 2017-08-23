@@ -1,0 +1,16 @@
+@data := SELECT rowid, * FROM results $criterion$ ORDER BY rowid LIMIT $maxrows$;
+
+@column_headers := SELECT name FROM
+                   (SELECT 'Rank' AS name, -1 as rnk UNION
+                    SELECT 'Node', 0 UNION
+                    SELECT nodes.name, sinks.sinkid+3 FROM nodes JOIN sinks
+                          ON nodes.nodeid=sinks.nodeid UNION
+                    SELECT 'Total', 2001 ORDER BY rnk);
+
+@column_formats := SELECT fmt FROM
+                   (SELECT '{0:d}.' AS fmt, -1 as rnk UNION
+                    SELECT '{0}', 0 UNION
+                    SELECT '{0:.2g}', sinks.sinkid+1 FROM sinks UNION
+                    SELECT '{0:.2g}', 2001 ORDER BY rnk);
+
+@title := SELECT  'Top ranking nodes';

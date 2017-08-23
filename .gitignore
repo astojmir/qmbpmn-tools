@@ -1,0 +1,14 @@
+# Lines starting with '#' are considered comments.
+*.o
+*.a
+*.so
+*.os
+*.pyc
+*~
+*.sconsign.dblite
+#*.*#
+MANIFEST
+VERSION
+dist/
+build/
+*_build

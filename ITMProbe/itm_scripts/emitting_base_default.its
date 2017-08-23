@@ -1,0 +1,17 @@
+$sourcecols$ := SELECT group_concat(srccol(sourceid, 'H')) FROM sources;
+$datacols$ := CREATE TEMPORARY TABLE IF NOT EXISTS datacols AS
+                SELECT 'datacol' || sourceid AS colid FROM sources;
+$tmp$ := CREATE TEMPORARY TABLE IF NOT EXISTS results AS
+           SELECT nodes.name AS name,
+                  $sourcecols$,
+                  (max(H.sourceid) + 1) * min(H.val) AS interference,
+                  sum(H.val) AS total_content
+           FROM nodes JOIN H
+           ON H.nodeid=nodes.nodeid
+           GROUP BY H.nodeid
+           ORDER BY $orderby$ DESC;
+
+$limit$ := SELECT CASE WHEN $usepr$ THEN
+             (SELECT CAST (min(round(participation_ratio($orderby$)),$maxrows$) AS INTEGER)
+                FROM results)
+             ELSE $maxrows$ END;

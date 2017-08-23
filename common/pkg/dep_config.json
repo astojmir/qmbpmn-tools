@@ -1,0 +1,1860 @@
+{
+  "dep_list": [
+    [
+      ["name", "gene2go"],
+      ["docstring", "gene2go file."],
+      ["dep_node_module", "qmbpmn.common.pkg.depnode_common"],
+      ["dep_node_class", "DepURLFile"],
+      ["hidden", true],
+      ["prereqs", null],
+      ["args", {
+        "url_fmt": "ftp://ftp.ncbi.nlm.nih.gov/gene/DATA/{0}",
+        "path": "gene2go",
+        "url_params": ["gene2go.gz"],
+        "compression": ".gz",
+        "file_name": "gene2go"
+      }]
+    ],
+    [
+      ["name", "GO-obo"],
+      ["docstring", "Gene Ontology .obo file."],
+      ["dep_node_module", "qmbpmn.common.pkg.depnode_common"],
+      ["dep_node_class", "DepURLFile"],
+      ["hidden", true],
+      ["prereqs", null],
+      ["args", {
+        "url_fmt": "http://www.geneontology.org/ontology/obo_format_1_2/{0}",
+        "path": "gene_ontology.1_2.obo",
+        "url_params": ["gene_ontology.1_2.obo"],
+        "file_name": "gene_ontology.1_2.obo"
+      }]
+    ],
+    [
+      ["name", "kegg-brite-pathways"],
+      ["docstring", "Describes the hiearchy of terms."],
+      ["dep_node_module", "qmbpmn.common.pkg.depnode_common"],
+      ["dep_node_class", "DepURLFile"],
+      ["hidden", true],
+      ["prereqs", null],
+      ["args", {
+        "url_fmt": "http://www.kegg.jp/kegg-bin/download_htext?htext={0}&format=htext",
+        "path": "br08901.keg",
+        "url_params": ["br08901.keg"],
+        "file_name": "br08901.keg"
+      }]
+    ],
+    [
+      ["name", "biogrid-ncbi-tab"],
+      ["docstring", "The biogrid NCBI file."],
+      ["dep_node_module", "qmbpmn.common.pkg.depnode_common"],
+      ["dep_node_class", "DepURLFile"],
+      ["hidden", true],
+      ["prereqs", null],
+      ["args", {
+        "url_fmt": "http://www.thebiogrid.org/downloads/datasets/{0}",
+        "path": "NCBI.tab.txt",
+        "url_params": ["NCBI.tab.txt"],
+        "file_name": "NCBI.tab.txt"
+      }]
+    ],
+    [
+      ["name", "ncbi-gene-sce"],
+      ["docstring", "NCBI Gene info for S. cerevisiae."],
+      ["dep_node_module", "qmbpmn.common.pkg.depnode_common"],
+      ["dep_node_class", "DepURLFile"],
+      ["hidden", true],
+      ["prereqs", null],
+      ["args", {
+        "url_fmt": "ftp://ftp.ncbi.nih.gov/gene/DATA/GENE_INFO/Fungi/{0}",
+        "path": "Saccharomyces_cerevisiae.gene_info",
+        "url_params": ["Saccharomyces_cerevisiae.gene_info.gz"],
+        "compression": ".gz",
+        "file_name": "Saccharomyces_cerevisiae.gene_info"
+      }]
+    ],
+    [
+      ["name", "ncbi-gene-index-sce"],
+      ["docstring", "Binary index of ncbi-gene-sce"],
+      ["dep_node_module", "qmbpmn.common.pkg.depnode_ncbi_gene"],
+      ["dep_node_class", "DepNCBIIndex"],
+      ["hidden", true],
+      ["prereqs", ["ncbi-gene-sce"]],
+      ["args", {
+        "gene_info_file": "Saccharomyces_cerevisiae.gene_info",
+        "gene_info_index": "Saccharomyces_cerevisiae.gene_info.ix",
+        "tax_id": "559292"
+      }]
+    ],
+    [
+      ["name", "kegg-term-sce"],
+      ["docstring", "KEGG term mappings for S. cerevisiae"],
+      ["dep_node_module", "qmbpmn.common.pkg.depnode_common"],
+      ["dep_node_class", "DepURLFile"],
+      ["hidden", true],
+      ["prereqs", null],
+      ["args", {
+        "url_fmt": "http://rest.kegg.jp/link/{0}/pathway",
+        "path": "sce.list",
+        "url_params": ["sce"],
+        "file_name": "sce.list"
+      }]
+    ],
+    [
+      ["name", "ETD-sce"],
+      ["docstring", "GO + KEGG Database: S. cerevisiae"],
+      ["dep_node_module", "qmbpmn.common.pkg.depnode_termdb"],
+      ["dep_node_class", "DepCombinedETD"],
+      ["hidden", false],
+      ["prereqs", [
+        "gene2go",
+        "GO-obo",
+        "ncbi-gene-sce",
+        "kegg-term-sce",
+        "kegg-brite-pathways"
+      ]],
+      ["args", {
+        "storage_dir": "ETD/",
+        "kwopts": {
+          "output_file": "Saccharomyces_cerevisiae.etd",
+          "gene2go_file": "gene2go",
+          "db_name": "GO + KEGG: Saccharomyces cerevisiae",
+          "gene_info_file": "Saccharomyces_cerevisiae.gene_info",
+          "obo_file": "gene_ontology.1_2.obo",
+          "gene2kegg_file": "sce.list",
+          "bri_file": "br08901.keg",
+          "org_prefix": "sce",
+          "tax_id": "559292"
+        }
+      }]
+    ],
+    [
+      ["name", "KEGG-sce.gmt"],
+      ["docstring", "GMT formatted KEGG: S. cerevisiae"],
+      ["dep_node_module", "qmbpmn.common.pkg.depnode_termdb"],
+      ["dep_node_class", "DepKEGG2Gmt"],
+      ["hidden", true],
+      ["prereqs", [
+        "ncbi-gene-sce",
+        "kegg-term-sce",
+        "kegg-brite-pathways"
+      ]],
+      ["args", {
+        "storage_dir": "GMT/",
+        "kwopts": {
+          "output_file": "KEGG-sce.gmt",
+          "gene_info_file": "Saccharomyces_cerevisiae.gene_info",
+          "gene2kegg_file": "sce.list",
+          "bri_file": "br08901.keg",
+          "org_prefix": "sce",
+          "tax_id": "559292"
+        }
+      }]
+    ],
+    [
+      ["name", "GO-bp-sce.gmt"],
+      ["docstring", "GMT formatted GO (bp): S. cerevisiae"],
+      ["dep_node_module", "qmbpmn.common.pkg.depnode_termdb"],
+      ["dep_node_class", "DepGO2Gmt"],
+      ["hidden", true],
+      ["prereqs", [
+        "gene2go",
+        "GO-obo",
+        "ncbi-gene-sce"
+      ]],
+      ["args", {
+        "storage_dir": "GMT/",
+        "kwopts": {
+          "output_file": "GO-bp-sce.gmt",
+          "gene_info_file": "Saccharomyces_cerevisiae.gene_info",
+          "obo_file": "gene_ontology.1_2.obo",
+          "gene2go_file": "gene2go",
+          "tax_id": "559292",
+          "namespace": "biological_process"
+        }
+      }]
+    ],
+    [
+      ["name", "GO-cc-sce.gmt"],
+      ["docstring", "GMT formatted GO (cc): S. cerevisiae"],
+      ["dep_node_module", "qmbpmn.common.pkg.depnode_termdb"],
+      ["dep_node_class", "DepGO2Gmt"],
+      ["hidden", true],
+      ["prereqs", [
+        "gene2go",
+        "GO-obo",
+        "ncbi-gene-sce"
+      ]],
+      ["args", {
+        "storage_dir": "GMT/",
+        "kwopts": {
+          "output_file": "GO-cc-sce.gmt",
+          "gene_info_file": "Saccharomyces_cerevisiae.gene_info",
+          "obo_file": "gene_ontology.1_2.obo",
+          "gene2go_file": "gene2go",
+          "tax_id": "559292",
+          "namespace": "cellular_component"
+        }
+      }]
+    ],
+    [
+      ["name", "GO-mf-sce.gmt"],
+      ["docstring", "GMT formatted GO (mf): S. cerevisiae"],
+      ["dep_node_module", "qmbpmn.common.pkg.depnode_termdb"],
+      ["dep_node_class", "DepGO2Gmt"],
+      ["hidden", true],
+      ["prereqs", [
+        "gene2go",
+        "GO-obo",
+        "ncbi-gene-sce"
+      ]],
+      ["args", {
+        "storage_dir": "GMT/",
+        "kwopts": {
+          "output_file": "GO-mf-sce.gmt",
+          "gene_info_file": "Saccharomyces_cerevisiae.gene_info",
+          "obo_file": "gene_ontology.1_2.obo",
+          "gene2go_file": "gene2go",
+          "tax_id": "559292",
+          "namespace": "molecular_function"
+        }
+      }]
+    ],
+    [
+      ["name", "ncbi-gene-dre"],
+      ["docstring", "NCBI Gene info for D. rerio."],
+      ["dep_node_module", "qmbpmn.common.pkg.depnode_common"],
+      ["dep_node_class", "DepURLFile"],
+      ["hidden", true],
+      ["prereqs", null],
+      ["args", {
+        "url_fmt": "ftp://ftp.ncbi.nih.gov/gene/DATA/GENE_INFO/Non-mammalian_vertebrates/{0}",
+        "path": "Danio_rerio.gene_info",
+        "url_params": ["Danio_rerio.gene_info.gz"],
+        "compression": ".gz",
+        "file_name": "Danio_rerio.gene_info"
+      }]
+    ],
+    [
+      ["name", "ncbi-gene-index-dre"],
+      ["docstring", "Binary index of ncbi-gene-dre"],
+      ["dep_node_module", "qmbpmn.common.pkg.depnode_ncbi_gene"],
+      ["dep_node_class", "DepNCBIIndex"],
+      ["hidden", true],
+      ["prereqs", ["ncbi-gene-dre"]],
+      ["args", {
+        "gene_info_file": "Danio_rerio.gene_info",
+        "gene_info_index": "Danio_rerio.gene_info.ix",
+        "tax_id": "7955"
+      }]
+    ],
+    [
+      ["name", "kegg-term-dre"],
+      ["docstring", "KEGG term mappings for D. rerio"],
+      ["dep_node_module", "qmbpmn.common.pkg.depnode_common"],
+      ["dep_node_class", "DepURLFile"],
+      ["hidden", true],
+      ["prereqs", null],
+      ["args", {
+        "url_fmt": "http://rest.kegg.jp/link/{0}/pathway",
+        "path": "dre.list",
+        "url_params": ["dre"],
+        "file_name": "dre.list"
+      }]
+    ],
+    [
+      ["name", "ETD-dre"],
+      ["docstring", "GO + KEGG Database: D. rerio"],
+      ["dep_node_module", "qmbpmn.common.pkg.depnode_termdb"],
+      ["dep_node_class", "DepCombinedETD"],
+      ["hidden", false],
+      ["prereqs", [
+        "gene2go",
+        "GO-obo",
+        "ncbi-gene-dre",
+        "kegg-term-dre",
+        "kegg-brite-pathways"
+      ]],
+      ["args", {
+        "storage_dir": "ETD/",
+        "kwopts": {
+          "output_file": "Danio_rerio.etd",
+          "gene2go_file": "gene2go",
+          "db_name": "GO + KEGG: Danio rerio",
+          "gene_info_file": "Danio_rerio.gene_info",
+          "obo_file": "gene_ontology.1_2.obo",
+          "gene2kegg_file": "dre.list",
+          "bri_file": "br08901.keg",
+          "org_prefix": "dre",
+          "tax_id": "7955"
+        }
+      }]
+    ],
+    [
+      ["name", "KEGG-dre.gmt"],
+      ["docstring", "GMT formatted KEGG: D. rerio"],
+      ["dep_node_module", "qmbpmn.common.pkg.depnode_termdb"],
+      ["dep_node_class", "DepKEGG2Gmt"],
+      ["hidden", true],
+      ["prereqs", [
+        "ncbi-gene-dre",
+        "kegg-term-dre",
+        "kegg-brite-pathways"
+      ]],
+      ["args", {
+        "storage_dir": "GMT/",
+        "kwopts": {
+          "output_file": "KEGG-dre.gmt",
+          "gene_info_file": "Danio_rerio.gene_info",
+          "gene2kegg_file": "dre.list",
+          "bri_file": "br08901.keg",
+          "org_prefix": "dre",
+          "tax_id": "7955"
+        }
+      }]
+    ],
+    [
+      ["name", "GO-bp-dre.gmt"],
+      ["docstring", "GMT formatted GO (bp): D. rerio"],
+      ["dep_node_module", "qmbpmn.common.pkg.depnode_termdb"],
+      ["dep_node_class", "DepGO2Gmt"],
+      ["hidden", true],
+      ["prereqs", [
+        "gene2go",
+        "GO-obo",
+        "ncbi-gene-dre"
+      ]],
+      ["args", {
+        "storage_dir": "GMT/",
+        "kwopts": {
+          "output_file": "GO-bp-dre.gmt",
+          "gene_info_file": "Danio_rerio.gene_info",
+          "obo_file": "gene_ontology.1_2.obo",
+          "gene2go_file": "gene2go",
+          "tax_id": "7955",
+          "namespace": "biological_process"
+        }
+      }]
+    ],
+    [
+      ["name", "GO-cc-dre.gmt"],
+      ["docstring", "GMT formatted GO (cc): D. rerio"],
+      ["dep_node_module", "qmbpmn.common.pkg.depnode_termdb"],
+      ["dep_node_class", "DepGO2Gmt"],
+      ["hidden", true],
+      ["prereqs", [
+        "gene2go",
+        "GO-obo",
+        "ncbi-gene-dre"
+      ]],
+      ["args", {
+        "storage_dir": "GMT/",
+        "kwopts": {
+          "output_file": "GO-cc-dre.gmt",
+          "gene_info_file": "Danio_rerio.gene_info",
+          "obo_file": "gene_ontology.1_2.obo",
+          "gene2go_file": "gene2go",
+          "tax_id": "7955",
+          "namespace": "cellular_component"
+        }
+      }]
+    ],
+    [
+      ["name", "GO-mf-dre.gmt"],
+      ["docstring", "GMT formatted GO (mf): D. rerio"],
+      ["dep_node_module", "qmbpmn.common.pkg.depnode_termdb"],
+      ["dep_node_class", "DepGO2Gmt"],
+      ["hidden", true],
+      ["prereqs", [
+        "gene2go",
+        "GO-obo",
+        "ncbi-gene-dre"
+      ]],
+      ["args", {
+        "storage_dir": "GMT/",
+        "kwopts": {
+          "output_file": "GO-mf-dre.gmt",
+          "gene_info_file": "Danio_rerio.gene_info",
+          "obo_file": "gene_ontology.1_2.obo",
+          "gene2go_file": "gene2go",
+          "tax_id": "7955",
+          "namespace": "molecular_function"
+        }
+      }]
+    ],
+    [
+      ["name", "ncbi-gene-pfa"],
+      ["docstring", "NCBI Gene info for P. falciparum."],
+      ["dep_node_module", "qmbpmn.common.pkg.depnode_common"],
+      ["dep_node_class", "DepURLFile"],
+      ["hidden", true],
+      ["prereqs", null],
+      ["args", {
+        "url_fmt": "ftp://ftp.ncbi.nih.gov/gene/DATA/GENE_INFO/Protozoa/{0}",
+        "path": "Plasmodium_falciparum.gene_info",
+        "url_params": ["Plasmodium_falciparum.gene_info.gz"],
+        "compression": ".gz",
+        "file_name": "Plasmodium_falciparum.gene_info"
+      }]
+    ],
+    [
+      ["name", "ncbi-gene-index-pfa"],
+      ["docstring", "Binary index of ncbi-gene-pfa"],
+      ["dep_node_module", "qmbpmn.common.pkg.depnode_ncbi_gene"],
+      ["dep_node_class", "DepNCBIIndex"],
+      ["hidden", true],
+      ["prereqs", ["ncbi-gene-pfa"]],
+      ["args", {
+        "gene_info_file": "Plasmodium_falciparum.gene_info",
+        "gene_info_index": "Plasmodium_falciparum.gene_info.ix",
+        "tax_id": "36329"
+      }]
+    ],
+    [
+      ["name", "kegg-term-pfa"],
+      ["docstring", "KEGG term mappings for P. falciparum"],
+      ["dep_node_module", "qmbpmn.common.pkg.depnode_common"],
+      ["dep_node_class", "DepURLFile"],
+      ["hidden", true],
+      ["prereqs", null],
+      ["args", {
+        "url_fmt": "http://rest.kegg.jp/link/{0}/pathway",
+        "path": "pfa.list",
+        "url_params": ["pfa"],
+        "file_name": "pfa.list"
+      }]
+    ],
+    [
+      ["name", "ETD-pfa"],
+      ["docstring", "GO + KEGG Database: P. falciparum"],
+      ["dep_node_module", "qmbpmn.common.pkg.depnode_termdb"],
+      ["dep_node_class", "DepCombinedETD"],
+      ["hidden", false],
+      ["prereqs", [
+        "gene2go",
+        "GO-obo",
+        "ncbi-gene-pfa",
+        "kegg-term-pfa",
+        "kegg-brite-pathways"
+      ]],
+      ["args", {
+        "storage_dir": "ETD/",
+        "kwopts": {
+          "output_file": "Plasmodium_falciparum.etd",
+          "gene2go_file": "gene2go",
+          "db_name": "GO + KEGG: Plasmodium falciparum",
+          "gene_info_file": "Plasmodium_falciparum.gene_info",
+          "obo_file": "gene_ontology.1_2.obo",
+          "gene2kegg_file": "pfa.list",
+          "bri_file": "br08901.keg",
+          "org_prefix": "pfa",
+          "tax_id": "36329"
+        }
+      }]
+    ],
+    [
+      ["name", "KEGG-pfa.gmt"],
+      ["docstring", "GMT formatted KEGG: P. falciparum"],
+      ["dep_node_module", "qmbpmn.common.pkg.depnode_termdb"],
+      ["dep_node_class", "DepKEGG2Gmt"],
+      ["hidden", true],
+      ["prereqs", [
+        "ncbi-gene-pfa",
+        "kegg-term-pfa",
+        "kegg-brite-pathways"
+      ]],
+      ["args", {
+        "storage_dir": "GMT/",
+        "kwopts": {
+          "output_file": "KEGG-pfa.gmt",
+          "gene_info_file": "Plasmodium_falciparum.gene_info",
+          "gene2kegg_file": "pfa.list",
+          "bri_file": "br08901.keg",
+          "org_prefix": "pfa",
+          "tax_id": "36329"
+        }
+      }]
+    ],
+    [
+      ["name", "GO-bp-pfa.gmt"],
+      ["docstring", "GMT formatted GO (bp): P. falciparum"],
+      ["dep_node_module", "qmbpmn.common.pkg.depnode_termdb"],
+      ["dep_node_class", "DepGO2Gmt"],
+      ["hidden", true],
+      ["prereqs", [
+        "gene2go",
+        "GO-obo",
+        "ncbi-gene-pfa"
+      ]],
+      ["args", {
+        "storage_dir": "GMT/",
+        "kwopts": {
+          "output_file": "GO-bp-pfa.gmt",
+          "gene_info_file": "Plasmodium_falciparum.gene_info",
+          "obo_file": "gene_ontology.1_2.obo",
+          "gene2go_file": "gene2go",
+          "tax_id": "36329",
+          "namespace": "biological_process"
+        }
+      }]
+    ],
+    [
+      ["name", "GO-cc-pfa.gmt"],
+      ["docstring", "GMT formatted GO (cc): P. falciparum"],
+      ["dep_node_module", "qmbpmn.common.pkg.depnode_termdb"],
+      ["dep_node_class", "DepGO2Gmt"],
+      ["hidden", true],
+      ["prereqs", [
+        "gene2go",
+        "GO-obo",
+        "ncbi-gene-pfa"
+      ]],
+      ["args", {
+        "storage_dir": "GMT/",
+        "kwopts": {
+          "output_file": "GO-cc-pfa.gmt",
+          "gene_info_file": "Plasmodium_falciparum.gene_info",
+          "obo_file": "gene_ontology.1_2.obo",
+          "gene2go_file": "gene2go",
+          "tax_id": "36329",
+          "namespace": "cellular_component"
+        }
+      }]
+    ],
+    [
+      ["name", "GO-mf-pfa.gmt"],
+      ["docstring", "GMT formatted GO (mf): P. falciparum"],
+      ["dep_node_module", "qmbpmn.common.pkg.depnode_termdb"],
+      ["dep_node_class", "DepGO2Gmt"],
+      ["hidden", true],
+      ["prereqs", [
+        "gene2go",
+        "GO-obo",
+        "ncbi-gene-pfa"
+      ]],
+      ["args", {
+        "storage_dir": "GMT/",
+        "kwopts": {
+          "output_file": "GO-mf-pfa.gmt",
+          "gene_info_file": "Plasmodium_falciparum.gene_info",
+          "obo_file": "gene_ontology.1_2.obo",
+          "gene2go_file": "gene2go",
+          "tax_id": "36329",
+          "namespace": "molecular_function"
+        }
+      }]
+    ],
+    [
+      ["name", "ncbi-gene-ath"],
+      ["docstring", "NCBI Gene info for A. thaliana."],
+      ["dep_node_module", "qmbpmn.common.pkg.depnode_common"],
+      ["dep_node_class", "DepURLFile"],
+      ["hidden", true],
+      ["prereqs", null],
+      ["args", {
+        "url_fmt": "ftp://ftp.ncbi.nih.gov/gene/DATA/GENE_INFO/Plants/{0}",
+        "path": "Arabidopsis_thaliana.gene_info",
+        "url_params": ["Arabidopsis_thaliana.gene_info.gz"],
+        "compression": ".gz",
+        "file_name": "Arabidopsis_thaliana.gene_info"
+      }]
+    ],
+    [
+      ["name", "ncbi-gene-index-ath"],
+      ["docstring", "Binary index of ncbi-gene-ath"],
+      ["dep_node_module", "qmbpmn.common.pkg.depnode_ncbi_gene"],
+      ["dep_node_class", "DepNCBIIndex"],
+      ["hidden", true],
+      ["prereqs", ["ncbi-gene-ath"]],
+      ["args", {
+        "gene_info_file": "Arabidopsis_thaliana.gene_info",
+        "gene_info_index": "Arabidopsis_thaliana.gene_info.ix",
+        "tax_id": "3702"
+      }]
+    ],
+    [
+      ["name", "kegg-term-ath"],
+      ["docstring", "KEGG term mappings for A. thaliana"],
+      ["dep_node_module", "qmbpmn.common.pkg.depnode_common"],
+      ["dep_node_class", "DepURLFile"],
+      ["hidden", true],
+      ["prereqs", null],
+      ["args", {
+        "url_fmt": "http://rest.kegg.jp/link/{0}/pathway",
+        "path": "ath.list",
+        "url_params": ["ath"],
+        "file_name": "ath.list"
+      }]
+    ],
+    [
+      ["name", "ETD-ath"],
+      ["docstring", "GO + KEGG Database: A. thaliana"],
+      ["dep_node_module", "qmbpmn.common.pkg.depnode_termdb"],
+      ["dep_node_class", "DepCombinedETD"],
+      ["hidden", false],
+      ["prereqs", [
+        "gene2go",
+        "GO-obo",
+        "ncbi-gene-ath",
+        "kegg-term-ath",
+        "kegg-brite-pathways"
+      ]],
+      ["args", {
+        "storage_dir": "ETD/",
+        "kwopts": {
+          "output_file": "Arabidopsis_thaliana.etd",
+          "gene2go_file": "gene2go",
+          "db_name": "GO + KEGG: Arabidopsis thaliana",
+          "gene_info_file": "Arabidopsis_thaliana.gene_info",
+          "obo_file": "gene_ontology.1_2.obo",
+          "gene2kegg_file": "ath.list",
+          "bri_file": "br08901.keg",
+          "org_prefix": "ath",
+          "tax_id": "3702"
+        }
+      }]
+    ],
+    [
+      ["name", "KEGG-ath.gmt"],
+      ["docstring", "GMT formatted KEGG: A. thaliana"],
+      ["dep_node_module", "qmbpmn.common.pkg.depnode_termdb"],
+      ["dep_node_class", "DepKEGG2Gmt"],
+      ["hidden", true],
+      ["prereqs", [
+        "ncbi-gene-ath",
+        "kegg-term-ath",
+        "kegg-brite-pathways"
+      ]],
+      ["args", {
+        "storage_dir": "GMT/",
+        "kwopts": {
+          "output_file": "KEGG-ath.gmt",
+          "gene_info_file": "Arabidopsis_thaliana.gene_info",
+          "gene2kegg_file": "ath.list",
+          "bri_file": "br08901.keg",
+          "org_prefix": "ath",
+          "tax_id": "3702"
+        }
+      }]
+    ],
+    [
+      ["name", "GO-bp-ath.gmt"],
+      ["docstring", "GMT formatted GO (bp): A. thaliana"],
+      ["dep_node_module", "qmbpmn.common.pkg.depnode_termdb"],
+      ["dep_node_class", "DepGO2Gmt"],
+      ["hidden", true],
+      ["prereqs", [
+        "gene2go",
+        "GO-obo",
+        "ncbi-gene-ath"
+      ]],
+      ["args", {
+        "storage_dir": "GMT/",
+        "kwopts": {
+          "output_file": "GO-bp-ath.gmt",
+          "gene_info_file": "Arabidopsis_thaliana.gene_info",
+          "obo_file": "gene_ontology.1_2.obo",
+          "gene2go_file": "gene2go",
+          "tax_id": "3702",
+          "namespace": "biological_process"
+        }
+      }]
+    ],
+    [
+      ["name", "GO-cc-ath.gmt"],
+      ["docstring", "GMT formatted GO (cc): A. thaliana"],
+      ["dep_node_module", "qmbpmn.common.pkg.depnode_termdb"],
+      ["dep_node_class", "DepGO2Gmt"],
+      ["hidden", true],
+      ["prereqs", [
+        "gene2go",
+        "GO-obo",
+        "ncbi-gene-ath"
+      ]],
+      ["args", {
+        "storage_dir": "GMT/",
+        "kwopts": {
+          "output_file": "GO-cc-ath.gmt",
+          "gene_info_file": "Arabidopsis_thaliana.gene_info",
+          "obo_file": "gene_ontology.1_2.obo",
+          "gene2go_file": "gene2go",
+          "tax_id": "3702",
+          "namespace": "cellular_component"
+        }
+      }]
+    ],
+    [
+      ["name", "GO-mf-ath.gmt"],
+      ["docstring", "GMT formatted GO (mf): A. thaliana"],
+      ["dep_node_module", "qmbpmn.common.pkg.depnode_termdb"],
+      ["dep_node_class", "DepGO2Gmt"],
+      ["hidden", true],
+      ["prereqs", [
+        "gene2go",
+        "GO-obo",
+        "ncbi-gene-ath"
+      ]],
+      ["args", {
+        "storage_dir": "GMT/",
+        "kwopts": {
+          "output_file": "GO-mf-ath.gmt",
+          "gene_info_file": "Arabidopsis_thaliana.gene_info",
+          "obo_file": "gene_ontology.1_2.obo",
+          "gene2go_file": "gene2go",
+          "tax_id": "3702",
+          "namespace": "molecular_function"
+        }
+      }]
+    ],
+    [
+      ["name", "ncbi-gene-dme"],
+      ["docstring", "NCBI Gene info for D. melanogaster."],
+      ["dep_node_module", "qmbpmn.common.pkg.depnode_common"],
+      ["dep_node_class", "DepURLFile"],
+      ["hidden", true],
+      ["prereqs", null],
+      ["args", {
+        "url_fmt": "ftp://ftp.ncbi.nih.gov/gene/DATA/GENE_INFO/Invertebrates/{0}",
+        "path": "Drosophila_melanogaster.gene_info",
+        "url_params": ["Drosophila_melanogaster.gene_info.gz"],
+        "compression": ".gz",
+        "file_name": "Drosophila_melanogaster.gene_info"
+      }]
+    ],
+    [
+      ["name", "ncbi-gene-index-dme"],
+      ["docstring", "Binary index of ncbi-gene-dme"],
+      ["dep_node_module", "qmbpmn.common.pkg.depnode_ncbi_gene"],
+      ["dep_node_class", "DepNCBIIndex"],
+      ["hidden", true],
+      ["prereqs", ["ncbi-gene-dme"]],
+      ["args", {
+        "gene_info_file": "Drosophila_melanogaster.gene_info",
+        "gene_info_index": "Drosophila_melanogaster.gene_info.ix",
+        "tax_id": "7227"
+      }]
+    ],
+    [
+      ["name", "kegg-term-dme"],
+      ["docstring", "KEGG term mappings for D. melanogaster"],
+      ["dep_node_module", "qmbpmn.common.pkg.depnode_common"],
+      ["dep_node_class", "DepURLFile"],
+      ["hidden", true],
+      ["prereqs", null],
+      ["args", {
+        "url_fmt": "http://rest.kegg.jp/link/{0}/pathway",
+        "path": "dme.list",
+        "url_params": ["dme"],
+        "file_name": "dme.list"
+      }]
+    ],
+    [
+      ["name", "ETD-dme"],
+      ["docstring", "GO + KEGG Database: D. melanogaster"],
+      ["dep_node_module", "qmbpmn.common.pkg.depnode_termdb"],
+      ["dep_node_class", "DepCombinedETD"],
+      ["hidden", false],
+      ["prereqs", [
+        "gene2go",
+        "GO-obo",
+        "ncbi-gene-dme",
+        "kegg-term-dme",
+        "kegg-brite-pathways"
+      ]],
+      ["args", {
+        "storage_dir": "ETD/",
+        "kwopts": {
+          "output_file": "Drosophila_melanogaster.etd",
+          "gene2go_file": "gene2go",
+          "db_name": "GO + KEGG: Drosophila melanogaster",
+          "gene_info_file": "Drosophila_melanogaster.gene_info",
+          "obo_file": "gene_ontology.1_2.obo",
+          "gene2kegg_file": "dme.list",
+          "bri_file": "br08901.keg",
+          "org_prefix": "dme",
+          "tax_id": "7227"
+        }
+      }]
+    ],
+    [
+      ["name", "KEGG-dme.gmt"],
+      ["docstring", "GMT formatted KEGG: D. melanogaster"],
+      ["dep_node_module", "qmbpmn.common.pkg.depnode_termdb"],
+      ["dep_node_class", "DepKEGG2Gmt"],
+      ["hidden", true],
+      ["prereqs", [
+        "ncbi-gene-dme",
+        "kegg-term-dme",
+        "kegg-brite-pathways"
+      ]],
+      ["args", {
+        "storage_dir": "GMT/",
+        "kwopts": {
+          "output_file": "KEGG-dme.gmt",
+          "gene_info_file": "Drosophila_melanogaster.gene_info",
+          "gene2kegg_file": "dme.list",
+          "bri_file": "br08901.keg",
+          "org_prefix": "dme",
+          "tax_id": "7227"
+        }
+      }]
+    ],
+    [
+      ["name", "GO-bp-dme.gmt"],
+      ["docstring", "GMT formatted GO (bp): D. melanogaster"],
+      ["dep_node_module", "qmbpmn.common.pkg.depnode_termdb"],
+      ["dep_node_class", "DepGO2Gmt"],
+      ["hidden", true],
+      ["prereqs", [
+        "gene2go",
+        "GO-obo",
+        "ncbi-gene-dme"
+      ]],
+      ["args", {
+        "storage_dir": "GMT/",
+        "kwopts": {
+          "output_file": "GO-bp-dme.gmt",
+          "gene_info_file": "Drosophila_melanogaster.gene_info",
+          "obo_file": "gene_ontology.1_2.obo",
+          "gene2go_file": "gene2go",
+          "tax_id": "7227",
+          "namespace": "biological_process"
+        }
+      }]
+    ],
+    [
+      ["name", "GO-cc-dme.gmt"],
+      ["docstring", "GMT formatted GO (cc): D. melanogaster"],
+      ["dep_node_module", "qmbpmn.common.pkg.depnode_termdb"],
+      ["dep_node_class", "DepGO2Gmt"],
+      ["hidden", true],
+      ["prereqs", [
+        "gene2go",
+        "GO-obo",
+        "ncbi-gene-dme"
+      ]],
+      ["args", {
+        "storage_dir": "GMT/",
+        "kwopts": {
+          "output_file": "GO-cc-dme.gmt",
+          "gene_info_file": "Drosophila_melanogaster.gene_info",
+          "obo_file": "gene_ontology.1_2.obo",
+          "gene2go_file": "gene2go",
+          "tax_id": "7227",
+          "namespace": "cellular_component"
+        }
+      }]
+    ],
+    [
+      ["name", "GO-mf-dme.gmt"],
+      ["docstring", "GMT formatted GO (mf): D. melanogaster"],
+      ["dep_node_module", "qmbpmn.common.pkg.depnode_termdb"],
+      ["dep_node_class", "DepGO2Gmt"],
+      ["hidden", true],
+      ["prereqs", [
+        "gene2go",
+        "GO-obo",
+        "ncbi-gene-dme"
+      ]],
+      ["args", {
+        "storage_dir": "GMT/",
+        "kwopts": {
+          "output_file": "GO-mf-dme.gmt",
+          "gene_info_file": "Drosophila_melanogaster.gene_info",
+          "obo_file": "gene_ontology.1_2.obo",
+          "gene2go_file": "gene2go",
+          "tax_id": "7227",
+          "namespace": "molecular_function"
+        }
+      }]
+    ],
+    [
+      ["name", "ncbi-gene-rno"],
+      ["docstring", "NCBI Gene info for R. norvegicus."],
+      ["dep_node_module", "qmbpmn.common.pkg.depnode_common"],
+      ["dep_node_class", "DepURLFile"],
+      ["hidden", true],
+      ["prereqs", null],
+      ["args", {
+        "url_fmt": "ftp://ftp.ncbi.nih.gov/gene/DATA/GENE_INFO/Mammalia/{0}",
+        "path": "Rattus_norvegicus.gene_info",
+        "url_params": ["Rattus_norvegicus.gene_info.gz"],
+        "compression": ".gz",
+        "file_name": "Rattus_norvegicus.gene_info"
+      }]
+    ],
+    [
+      ["name", "ncbi-gene-index-rno"],
+      ["docstring", "Binary index of ncbi-gene-rno"],
+      ["dep_node_module", "qmbpmn.common.pkg.depnode_ncbi_gene"],
+      ["dep_node_class", "DepNCBIIndex"],
+      ["hidden", true],
+      ["prereqs", ["ncbi-gene-rno"]],
+      ["args", {
+        "gene_info_file": "Rattus_norvegicus.gene_info",
+        "gene_info_index": "Rattus_norvegicus.gene_info.ix",
+        "tax_id": "10116"
+      }]
+    ],
+    [
+      ["name", "kegg-term-rno"],
+      ["docstring", "KEGG term mappings for R. norvegicus"],
+      ["dep_node_module", "qmbpmn.common.pkg.depnode_common"],
+      ["dep_node_class", "DepURLFile"],
+      ["hidden", true],
+      ["prereqs", null],
+      ["args", {
+        "url_fmt": "http://rest.kegg.jp/link/{0}/pathway",
+        "path": "rno.list",
+        "url_params": ["rno"],
+        "file_name": "rno.list"
+      }]
+    ],
+    [
+      ["name", "ETD-rno"],
+      ["docstring", "GO + KEGG Database: R. norvegicus"],
+      ["dep_node_module", "qmbpmn.common.pkg.depnode_termdb"],
+      ["dep_node_class", "DepCombinedETD"],
+      ["hidden", false],
+      ["prereqs", [
+        "gene2go",
+        "GO-obo",
+        "ncbi-gene-rno",
+        "kegg-term-rno",
+        "kegg-brite-pathways"
+      ]],
+      ["args", {
+        "storage_dir": "ETD/",
+        "kwopts": {
+          "output_file": "Rattus_norvegicus.etd",
+          "gene2go_file": "gene2go",
+          "db_name": "GO + KEGG: Rattus norvegicus",
+          "gene_info_file": "Rattus_norvegicus.gene_info",
+          "obo_file": "gene_ontology.1_2.obo",
+          "gene2kegg_file": "rno.list",
+          "bri_file": "br08901.keg",
+          "org_prefix": "rno",
+          "tax_id": "10116"
+        }
+      }]
+    ],
+    [
+      ["name", "KEGG-rno.gmt"],
+      ["docstring", "GMT formatted KEGG: R. norvegicus"],
+      ["dep_node_module", "qmbpmn.common.pkg.depnode_termdb"],
+      ["dep_node_class", "DepKEGG2Gmt"],
+      ["hidden", true],
+      ["prereqs", [
+        "ncbi-gene-rno",
+        "kegg-term-rno",
+        "kegg-brite-pathways"
+      ]],
+      ["args", {
+        "storage_dir": "GMT/",
+        "kwopts": {
+          "output_file": "KEGG-rno.gmt",
+          "gene_info_file": "Rattus_norvegicus.gene_info",
+          "gene2kegg_file": "rno.list",
+          "bri_file": "br08901.keg",
+          "org_prefix": "rno",
+          "tax_id": "10116"
+        }
+      }]
+    ],
+    [
+      ["name", "GO-bp-rno.gmt"],
+      ["docstring", "GMT formatted GO (bp): R. norvegicus"],
+      ["dep_node_module", "qmbpmn.common.pkg.depnode_termdb"],
+      ["dep_node_class", "DepGO2Gmt"],
+      ["hidden", true],
+      ["prereqs", [
+        "gene2go",
+        "GO-obo",
+        "ncbi-gene-rno"
+      ]],
+      ["args", {
+        "storage_dir": "GMT/",
+        "kwopts": {
+          "output_file": "GO-bp-rno.gmt",
+          "gene_info_file": "Rattus_norvegicus.gene_info",
+          "obo_file": "gene_ontology.1_2.obo",
+          "gene2go_file": "gene2go",
+          "tax_id": "10116",
+          "namespace": "biological_process"
+        }
+      }]
+    ],
+    [
+      ["name", "GO-cc-rno.gmt"],
+      ["docstring", "GMT formatted GO (cc): R. norvegicus"],
+      ["dep_node_module", "qmbpmn.common.pkg.depnode_termdb"],
+      ["dep_node_class", "DepGO2Gmt"],
+      ["hidden", true],
+      ["prereqs", [
+        "gene2go",
+        "GO-obo",
+        "ncbi-gene-rno"
+      ]],
+      ["args", {
+        "storage_dir": "GMT/",
+        "kwopts": {
+          "output_file": "GO-cc-rno.gmt",
+          "gene_info_file": "Rattus_norvegicus.gene_info",
+          "obo_file": "gene_ontology.1_2.obo",
+          "gene2go_file": "gene2go",
+          "tax_id": "10116",
+          "namespace": "cellular_component"
+        }
+      }]
+    ],
+    [
+      ["name", "GO-mf-rno.gmt"],
+      ["docstring", "GMT formatted GO (mf): R. norvegicus"],
+      ["dep_node_module", "qmbpmn.common.pkg.depnode_termdb"],
+      ["dep_node_class", "DepGO2Gmt"],
+      ["hidden", true],
+      ["prereqs", [
+        "gene2go",
+        "GO-obo",
+        "ncbi-gene-rno"
+      ]],
+      ["args", {
+        "storage_dir": "GMT/",
+        "kwopts": {
+          "output_file": "GO-mf-rno.gmt",
+          "gene_info_file": "Rattus_norvegicus.gene_info",
+          "obo_file": "gene_ontology.1_2.obo",
+          "gene2go_file": "gene2go",
+          "tax_id": "10116",
+          "namespace": "molecular_function"
+        }
+      }]
+    ],
+    [
+      ["name", "ncbi-gene-cel"],
+      ["docstring", "NCBI Gene info for C. elegans."],
+      ["dep_node_module", "qmbpmn.common.pkg.depnode_common"],
+      ["dep_node_class", "DepURLFile"],
+      ["hidden", true],
+      ["prereqs", null],
+      ["args", {
+        "url_fmt": "ftp://ftp.ncbi.nih.gov/gene/DATA/GENE_INFO/Invertebrates/{0}",
+        "path": "Caenorhabditis_elegans.gene_info",
+        "url_params": ["Caenorhabditis_elegans.gene_info.gz"],
+        "compression": ".gz",
+        "file_name": "Caenorhabditis_elegans.gene_info"
+      }]
+    ],
+    [
+      ["name", "ncbi-gene-index-cel"],
+      ["docstring", "Binary index of ncbi-gene-cel"],
+      ["dep_node_module", "qmbpmn.common.pkg.depnode_ncbi_gene"],
+      ["dep_node_class", "DepNCBIIndex"],
+      ["hidden", true],
+      ["prereqs", ["ncbi-gene-cel"]],
+      ["args", {
+        "gene_info_file": "Caenorhabditis_elegans.gene_info",
+        "gene_info_index": "Caenorhabditis_elegans.gene_info.ix",
+        "tax_id": "6239"
+      }]
+    ],
+    [
+      ["name", "kegg-term-cel"],
+      ["docstring", "KEGG term mappings for C. elegans"],
+      ["dep_node_module", "qmbpmn.common.pkg.depnode_common"],
+      ["dep_node_class", "DepURLFile"],
+      ["hidden", true],
+      ["prereqs", null],
+      ["args", {
+        "url_fmt": "http://rest.kegg.jp/link/{0}/pathway",
+        "path": "cel.list",
+        "url_params": ["cel"],
+        "file_name": "cel.list"
+      }]
+    ],
+    [
+      ["name", "ETD-cel"],
+      ["docstring", "GO + KEGG Database: C. elegans"],
+      ["dep_node_module", "qmbpmn.common.pkg.depnode_termdb"],
+      ["dep_node_class", "DepCombinedETD"],
+      ["hidden", false],
+      ["prereqs", [
+        "gene2go",
+        "GO-obo",
+        "ncbi-gene-cel",
+        "kegg-term-cel",
+        "kegg-brite-pathways"
+      ]],
+      ["args", {
+        "storage_dir": "ETD/",
+        "kwopts": {
+          "output_file": "Caenorhabditis_elegans.etd",
+          "gene2go_file": "gene2go",
+          "db_name": "GO + KEGG: Caenorhabditis elegans",
+          "gene_info_file": "Caenorhabditis_elegans.gene_info",
+          "obo_file": "gene_ontology.1_2.obo",
+          "gene2kegg_file": "cel.list",
+          "bri_file": "br08901.keg",
+          "org_prefix": "cel",
+          "tax_id": "6239"
+        }
+      }]
+    ],
+    [
+      ["name", "KEGG-cel.gmt"],
+      ["docstring", "GMT formatted KEGG: C. elegans"],
+      ["dep_node_module", "qmbpmn.common.pkg.depnode_termdb"],
+      ["dep_node_class", "DepKEGG2Gmt"],
+      ["hidden", true],
+      ["prereqs", [
+        "ncbi-gene-cel",
+        "kegg-term-cel",
+        "kegg-brite-pathways"
+      ]],
+      ["args", {
+        "storage_dir": "GMT/",
+        "kwopts": {
+          "output_file": "KEGG-cel.gmt",
+          "gene_info_file": "Caenorhabditis_elegans.gene_info",
+          "gene2kegg_file": "cel.list",
+          "bri_file": "br08901.keg",
+          "org_prefix": "cel",
+          "tax_id": "6239"
+        }
+      }]
+    ],
+    [
+      ["name", "GO-bp-cel.gmt"],
+      ["docstring", "GMT formatted GO (bp): C. elegans"],
+      ["dep_node_module", "qmbpmn.common.pkg.depnode_termdb"],
+      ["dep_node_class", "DepGO2Gmt"],
+      ["hidden", true],
+      ["prereqs", [
+        "gene2go",
+        "GO-obo",
+        "ncbi-gene-cel"
+      ]],
+      ["args", {
+        "storage_dir": "GMT/",
+        "kwopts": {
+          "output_file": "GO-bp-cel.gmt",
+          "gene_info_file": "Caenorhabditis_elegans.gene_info",
+          "obo_file": "gene_ontology.1_2.obo",
+          "gene2go_file": "gene2go",
+          "tax_id": "6239",
+          "namespace": "biological_process"
+        }
+      }]
+    ],
+    [
+      ["name", "GO-cc-cel.gmt"],
+      ["docstring", "GMT formatted GO (cc): C. elegans"],
+      ["dep_node_module", "qmbpmn.common.pkg.depnode_termdb"],
+      ["dep_node_class", "DepGO2Gmt"],
+      ["hidden", true],
+      ["prereqs", [
+        "gene2go",
+        "GO-obo",
+        "ncbi-gene-cel"
+      ]],
+      ["args", {
+        "storage_dir": "GMT/",
+        "kwopts": {
+          "output_file": "GO-cc-cel.gmt",
+          "gene_info_file": "Caenorhabditis_elegans.gene_info",
+          "obo_file": "gene_ontology.1_2.obo",
+          "gene2go_file": "gene2go",
+          "tax_id": "6239",
+          "namespace": "cellular_component"
+        }
+      }]
+    ],
+    [
+      ["name", "GO-mf-cel.gmt"],
+      ["docstring", "GMT formatted GO (mf): C. elegans"],
+      ["dep_node_module", "qmbpmn.common.pkg.depnode_termdb"],
+      ["dep_node_class", "DepGO2Gmt"],
+      ["hidden", true],
+      ["prereqs", [
+        "gene2go",
+        "GO-obo",
+        "ncbi-gene-cel"
+      ]],
+      ["args", {
+        "storage_dir": "GMT/",
+        "kwopts": {
+          "output_file": "GO-mf-cel.gmt",
+          "gene_info_file": "Caenorhabditis_elegans.gene_info",
+          "obo_file": "gene_ontology.1_2.obo",
+          "gene2go_file": "gene2go",
+          "tax_id": "6239",
+          "namespace": "molecular_function"
+        }
+      }]
+    ],
+    [
+      ["name", "ncbi-gene-hsa"],
+      ["docstring", "NCBI Gene info for H. sapiens."],
+      ["dep_node_module", "qmbpmn.common.pkg.depnode_common"],
+      ["dep_node_class", "DepURLFile"],
+      ["hidden", true],
+      ["prereqs", null],
+      ["args", {
+        "url_fmt": "ftp://ftp.ncbi.nih.gov/gene/DATA/GENE_INFO/Mammalia/{0}",
+        "path": "Homo_sapiens.gene_info",
+        "url_params": ["Homo_sapiens.gene_info.gz"],
+        "compression": ".gz",
+        "file_name": "Homo_sapiens.gene_info"
+      }]
+    ],
+    [
+      ["name", "ncbi-gene-index-hsa"],
+      ["docstring", "Binary index of ncbi-gene-hsa"],
+      ["dep_node_module", "qmbpmn.common.pkg.depnode_ncbi_gene"],
+      ["dep_node_class", "DepNCBIIndex"],
+      ["hidden", true],
+      ["prereqs", ["ncbi-gene-hsa"]],
+      ["args", {
+        "gene_info_file": "Homo_sapiens.gene_info",
+        "gene_info_index": "Homo_sapiens.gene_info.ix",
+        "tax_id": "9606"
+      }]
+    ],
+    [
+      ["name", "kegg-term-hsa"],
+      ["docstring", "KEGG term mappings for H. sapiens"],
+      ["dep_node_module", "qmbpmn.common.pkg.depnode_common"],
+      ["dep_node_class", "DepURLFile"],
+      ["hidden", true],
+      ["prereqs", null],
+      ["args", {
+        "url_fmt": "http://rest.kegg.jp/link/{0}/pathway",
+        "path": "hsa.list",
+        "url_params": ["hsa"],
+        "file_name": "hsa.list"
+      }]
+    ],
+    [
+      ["name", "ETD-hsa"],
+      ["docstring", "GO + KEGG Database: H. sapiens"],
+      ["dep_node_module", "qmbpmn.common.pkg.depnode_termdb"],
+      ["dep_node_class", "DepCombinedETD"],
+      ["hidden", false],
+      ["prereqs", [
+        "gene2go",
+        "GO-obo",
+        "ncbi-gene-hsa",
+        "kegg-term-hsa",
+        "kegg-brite-pathways"
+      ]],
+      ["args", {
+        "storage_dir": "ETD/",
+        "kwopts": {
+          "output_file": "Homo_sapiens.etd",
+          "gene2go_file": "gene2go",
+          "db_name": "GO + KEGG: Homo sapiens",
+          "gene_info_file": "Homo_sapiens.gene_info",
+          "obo_file": "gene_ontology.1_2.obo",
+          "gene2kegg_file": "hsa.list",
+          "bri_file": "br08901.keg",
+          "org_prefix": "hsa",
+          "tax_id": "9606"
+        }
+      }]
+    ],
+    [
+      ["name", "KEGG-hsa.gmt"],
+      ["docstring", "GMT formatted KEGG: H. sapiens"],
+      ["dep_node_module", "qmbpmn.common.pkg.depnode_termdb"],
+      ["dep_node_class", "DepKEGG2Gmt"],
+      ["hidden", true],
+      ["prereqs", [
+        "ncbi-gene-hsa",
+        "kegg-term-hsa",
+        "kegg-brite-pathways"
+      ]],
+      ["args", {
+        "storage_dir": "GMT/",
+        "kwopts": {
+          "output_file": "KEGG-hsa.gmt",
+          "gene_info_file": "Homo_sapiens.gene_info",
+          "gene2kegg_file": "hsa.list",
+          "bri_file": "br08901.keg",
+          "org_prefix": "hsa",
+          "tax_id": "9606"
+        }
+      }]
+    ],
+    [
+      ["name", "GO-bp-hsa.gmt"],
+      ["docstring", "GMT formatted GO (bp): H. sapiens"],
+      ["dep_node_module", "qmbpmn.common.pkg.depnode_termdb"],
+      ["dep_node_class", "DepGO2Gmt"],
+      ["hidden", true],
+      ["prereqs", [
+        "gene2go",
+        "GO-obo",
+        "ncbi-gene-hsa"
+      ]],
+      ["args", {
+        "storage_dir": "GMT/",
+        "kwopts": {
+          "output_file": "GO-bp-hsa.gmt",
+          "gene_info_file": "Homo_sapiens.gene_info",
+          "obo_file": "gene_ontology.1_2.obo",
+          "gene2go_file": "gene2go",
+          "tax_id": "9606",
+          "namespace": "biological_process"
+        }
+      }]
+    ],
+    [
+      ["name", "GO-cc-hsa.gmt"],
+      ["docstring", "GMT formatted GO (cc): H. sapiens"],
+      ["dep_node_module", "qmbpmn.common.pkg.depnode_termdb"],
+      ["dep_node_class", "DepGO2Gmt"],
+      ["hidden", true],
+      ["prereqs", [
+        "gene2go",
+        "GO-obo",
+        "ncbi-gene-hsa"
+      ]],
+      ["args", {
+        "storage_dir": "GMT/",
+        "kwopts": {
+          "output_file": "GO-cc-hsa.gmt",
+          "gene_info_file": "Homo_sapiens.gene_info",
+          "obo_file": "gene_ontology.1_2.obo",
+          "gene2go_file": "gene2go",
+          "tax_id": "9606",
+          "namespace": "cellular_component"
+        }
+      }]
+    ],
+    [
+      ["name", "GO-mf-hsa.gmt"],
+      ["docstring", "GMT formatted GO (mf): H. sapiens"],
+      ["dep_node_module", "qmbpmn.common.pkg.depnode_termdb"],
+      ["dep_node_class", "DepGO2Gmt"],
+      ["hidden", true],
+      ["prereqs", [
+        "gene2go",
+        "GO-obo",
+        "ncbi-gene-hsa"
+      ]],
+      ["args", {
+        "storage_dir": "GMT/",
+        "kwopts": {
+          "output_file": "GO-mf-hsa.gmt",
+          "gene_info_file": "Homo_sapiens.gene_info",
+          "obo_file": "gene_ontology.1_2.obo",
+          "gene2go_file": "gene2go",
+          "tax_id": "9606",
+          "namespace": "molecular_function"
+        }
+      }]
+    ],
+    [
+      ["name", "ncbi-gene-mmu"],
+      ["docstring", "NCBI Gene info for M. musculus."],
+      ["dep_node_module", "qmbpmn.common.pkg.depnode_common"],
+      ["dep_node_class", "DepURLFile"],
+      ["hidden", true],
+      ["prereqs", null],
+      ["args", {
+        "url_fmt": "ftp://ftp.ncbi.nih.gov/gene/DATA/GENE_INFO/Mammalia/{0}",
+        "path": "Mus_musculus.gene_info",
+        "url_params": ["Mus_musculus.gene_info.gz"],
+        "compression": ".gz",
+        "file_name": "Mus_musculus.gene_info"
+      }]
+    ],
+    [
+      ["name", "ncbi-gene-index-mmu"],
+      ["docstring", "Binary index of ncbi-gene-mmu"],
+      ["dep_node_module", "qmbpmn.common.pkg.depnode_ncbi_gene"],
+      ["dep_node_class", "DepNCBIIndex"],
+      ["hidden", true],
+      ["prereqs", ["ncbi-gene-mmu"]],
+      ["args", {
+        "gene_info_file": "Mus_musculus.gene_info",
+        "gene_info_index": "Mus_musculus.gene_info.ix",
+        "tax_id": "10090"
+      }]
+    ],
+    [
+      ["name", "kegg-term-mmu"],
+      ["docstring", "KEGG term mappings for M. musculus"],
+      ["dep_node_module", "qmbpmn.common.pkg.depnode_common"],
+      ["dep_node_class", "DepURLFile"],
+      ["hidden", true],
+      ["prereqs", null],
+      ["args", {
+        "url_fmt": "http://rest.kegg.jp/link/{0}/pathway",
+        "path": "mmu.list",
+        "url_params": ["mmu"],
+        "file_name": "mmu.list"
+      }]
+    ],
+    [
+      ["name", "ETD-mmu"],
+      ["docstring", "GO + KEGG Database: M. musculus"],
+      ["dep_node_module", "qmbpmn.common.pkg.depnode_termdb"],
+      ["dep_node_class", "DepCombinedETD"],
+      ["hidden", false],
+      ["prereqs", [
+        "gene2go",
+        "GO-obo",
+        "ncbi-gene-mmu",
+        "kegg-term-mmu",
+        "kegg-brite-pathways"
+      ]],
+      ["args", {
+        "storage_dir": "ETD/",
+        "kwopts": {
+          "output_file": "Mus_musculus.etd",
+          "gene2go_file": "gene2go",
+          "db_name": "GO + KEGG: Mus musculus",
+          "gene_info_file": "Mus_musculus.gene_info",
+          "obo_file": "gene_ontology.1_2.obo",
+          "gene2kegg_file": "mmu.list",
+          "bri_file": "br08901.keg",
+          "org_prefix": "mmu",
+          "tax_id": "10090"
+        }
+      }]
+    ],
+    [
+      ["name", "KEGG-mmu.gmt"],
+      ["docstring", "GMT formatted KEGG: M. musculus"],
+      ["dep_node_module", "qmbpmn.common.pkg.depnode_termdb"],
+      ["dep_node_class", "DepKEGG2Gmt"],
+      ["hidden", true],
+      ["prereqs", [
+        "ncbi-gene-mmu",
+        "kegg-term-mmu",
+        "kegg-brite-pathways"
+      ]],
+      ["args", {
+        "storage_dir": "GMT/",
+        "kwopts": {
+          "output_file": "KEGG-mmu.gmt",
+          "gene_info_file": "Mus_musculus.gene_info",
+          "gene2kegg_file": "mmu.list",
+          "bri_file": "br08901.keg",
+          "org_prefix": "mmu",
+          "tax_id": "10090"
+        }
+      }]
+    ],
+    [
+      ["name", "GO-bp-mmu.gmt"],
+      ["docstring", "GMT formatted GO (bp): M. musculus"],
+      ["dep_node_module", "qmbpmn.common.pkg.depnode_termdb"],
+      ["dep_node_class", "DepGO2Gmt"],
+      ["hidden", true],
+      ["prereqs", [
+        "gene2go",
+        "GO-obo",
+        "ncbi-gene-mmu"
+      ]],
+      ["args", {
+        "storage_dir": "GMT/",
+        "kwopts": {
+          "output_file": "GO-bp-mmu.gmt",
+          "gene_info_file": "Mus_musculus.gene_info",
+          "obo_file": "gene_ontology.1_2.obo",
+          "gene2go_file": "gene2go",
+          "tax_id": "10090",
+          "namespace": "biological_process"
+        }
+      }]
+    ],
+    [
+      ["name", "GO-cc-mmu.gmt"],
+      ["docstring", "GMT formatted GO (cc): M. musculus"],
+      ["dep_node_module", "qmbpmn.common.pkg.depnode_termdb"],
+      ["dep_node_class", "DepGO2Gmt"],
+      ["hidden", true],
+      ["prereqs", [
+        "gene2go",
+        "GO-obo",
+        "ncbi-gene-mmu"
+      ]],
+      ["args", {
+        "storage_dir": "GMT/",
+        "kwopts": {
+          "output_file": "GO-cc-mmu.gmt",
+          "gene_info_file": "Mus_musculus.gene_info",
+          "obo_file": "gene_ontology.1_2.obo",
+          "gene2go_file": "gene2go",
+          "tax_id": "10090",
+          "namespace": "cellular_component"
+        }
+      }]
+    ],
+    [
+      ["name", "GO-mf-mmu.gmt"],
+      ["docstring", "GMT formatted GO (mf): M. musculus"],
+      ["dep_node_module", "qmbpmn.common.pkg.depnode_termdb"],
+      ["dep_node_class", "DepGO2Gmt"],
+      ["hidden", true],
+      ["prereqs", [
+        "gene2go",
+        "GO-obo",
+        "ncbi-gene-mmu"
+      ]],
+      ["args", {
+        "storage_dir": "GMT/",
+        "kwopts": {
+          "output_file": "GO-mf-mmu.gmt",
+          "gene_info_file": "Mus_musculus.gene_info",
+          "obo_file": "gene_ontology.1_2.obo",
+          "gene2go_file": "gene2go",
+          "tax_id": "10090",
+          "namespace": "molecular_function"
+        }
+      }]
+    ],
+    [
+      ["name", "gmt-all"],
+      ["docstring", "GMT formatted - all."],
+      ["dep_node_module", "qmbpmn.common.pkg.gluelib"],
+      ["dep_node_class", "DepNode"],
+      ["hidden", true],
+      ["prereqs", [
+        "GO-bp-ath.gmt",
+        "GO-cc-ath.gmt",
+        "GO-mf-ath.gmt",
+        "GO-bp-cel.gmt",
+        "GO-cc-cel.gmt",
+        "GO-mf-cel.gmt",
+        "GO-bp-dre.gmt",
+        "GO-cc-dre.gmt",
+        "GO-mf-dre.gmt",
+        "GO-bp-dme.gmt",
+        "GO-cc-dme.gmt",
+        "GO-mf-dme.gmt",
+        "GO-bp-hsa.gmt",
+        "GO-cc-hsa.gmt",
+        "GO-mf-hsa.gmt",
+        "GO-bp-mmu.gmt",
+        "GO-cc-mmu.gmt",
+        "GO-mf-mmu.gmt",
+        "GO-bp-pfa.gmt",
+        "GO-cc-pfa.gmt",
+        "GO-mf-pfa.gmt",
+        "GO-bp-rno.gmt",
+        "GO-cc-rno.gmt",
+        "GO-mf-rno.gmt",
+        "GO-bp-sce.gmt",
+        "GO-cc-sce.gmt",
+        "GO-mf-sce.gmt",
+        "KEGG-ath.gmt",
+        "KEGG-cel.gmt",
+        "KEGG-dre.gmt",
+        "KEGG-dme.gmt",
+        "KEGG-hsa.gmt",
+        "KEGG-mmu.gmt",
+        "KEGG-pfa.gmt",
+        "KEGG-rno.gmt",
+        "KEGG-sce.gmt"
+      ]],
+      ["args", {}]
+    ],
+    [
+      ["name", "hsa-full-network"],
+      ["docstring", "ITM Probe Network: H. sapiens (full)"],
+      ["dep_node_module", "qmbpmn.common.pkg.depnode_network"],
+      ["dep_node_class", "DepITMProbeNetwork"],
+      ["hidden", false],
+      ["prereqs", ["ncbi-gene-index-hsa", "biogrid-ncbi-tab"]],
+      ["args", {
+        "org_name": "Homo_sapiens",
+        "termdb_dir": "ETD/",
+        "graph_params": [{
+          "network_file": "Homo_sapiens.Fnet.cfg",
+          "graph_file": "Homo_sapiens.Fnet.pkl",
+          "biogrid_file": "NCBI.tab.txt",
+          "gene_info_index": "Homo_sapiens.gene_info.ix",
+          "network_name_suffix": "Homo sapiens - Full",
+          "group_name": "Other Physical Interaction",
+          "antisinks": [],
+          "non_filtered_pubmed_ids": null,
+          "undirected_systems_map": {
+            "Co-fractionation": 1.0,
+            "Biochemical Activity": 1.0,
+            "Affinity Capture-Western": 1.0,
+            "Far Western": 1.0,
+            "Reconstituted Complex": 1.0,
+            "Two-hybrid": 1.0,
+            "Co-crystal Structure": 1.0,
+            "Co-purification": 1.0,
+            "Co-localization": 1.0,
+            "Affinity Capture-RNA": 1.0,
+            "PCA": 1.0,
+            "Affinity Capture-MS": 1.0,
+            "FRET": 1.0
+          },
+          "throughput_cutoff": 300000000,
+          "directed_systems_map": {}
+        }]
+      }]
+    ],
+    [
+      ["name", "dme-full-network"],
+      ["docstring", "ITM Probe Network: D. melanogaster (full)"],
+      ["dep_node_module", "qmbpmn.common.pkg.depnode_network"],
+      ["dep_node_class", "DepITMProbeNetwork"],
+      ["hidden", false],
+      ["prereqs", ["ncbi-gene-index-dme", "biogrid-ncbi-tab"]],
+      ["args", {
+        "org_name": "Drosophila_melanogaster",
+        "termdb_dir": "ETD/",
+        "graph_params": [{
+          "network_file": "Drosophila_melanogaster.Fnet.cfg",
+          "graph_file": "Drosophila_melanogaster.Fnet.pkl",
+          "biogrid_file": "NCBI.tab.txt",
+          "gene_info_index": "Drosophila_melanogaster.gene_info.ix",
+          "network_name_suffix": "Drosophila melanogaster - Full",
+          "group_name": "Other Physical Interaction",
+          "antisinks": [],
+          "non_filtered_pubmed_ids": null,
+          "directed_systems_map": {},
+          "throughput_cutoff": 300000000,
+          "undirected_systems_map": {
+            "Co-fractionation": 1.0,
+            "Biochemical Activity": 1.0,
+            "Affinity Capture-Western": 1.0,
+            "Far Western": 1.0,
+            "Reconstituted Complex": 1.0,
+            "Two-hybrid": 1.0,
+            "Co-crystal Structure": 1.0,
+            "Co-purification": 1.0,
+            "Co-localization": 1.0,
+            "Affinity Capture-RNA": 1.0,
+            "PCA": 1.0,
+            "Affinity Capture-MS": 1.0,
+            "FRET": 1.0
+          }
+        }]
+      }]
+    ],
+    [
+      ["name", "cel-full-network"],
+      ["docstring", "ITM Probe Network: C. elegans (full)"],
+      ["dep_node_module", "qmbpmn.common.pkg.depnode_network"],
+      ["dep_node_class", "DepITMProbeNetwork"],
+      ["hidden", false],
+      ["prereqs", ["ncbi-gene-index-cel", "biogrid-ncbi-tab"]],
+      ["args", {
+        "org_name": "Caenorhabditis_elegans",
+        "termdb_dir": "ETD/",
+        "graph_params": [{
+          "network_file": "Caenorhabditis_elegans.Fnet.cfg",
+          "graph_file": "Caenorhabditis_elegans.Fnet.pkl",
+          "biogrid_file": "NCBI.tab.txt",
+          "gene_info_index": "Caenorhabditis_elegans.gene_info.ix",
+          "network_name_suffix": "Caenorhabditis_elegans - Full",
+          "group_name": "Other Physical Interaction",
+          "antisinks": [],
+          "throughput_cutoff": 300000000,
+          "directed_systems_map": {},
+          "non_filtered_pubmed_ids": null,
+          "undirected_systems_map": {
+            "Co-fractionation": 1.0,
+            "Biochemical Activity": 1.0,
+            "Affinity Capture-Western": 1.0,
+            "Far Western": 1.0,
+            "Reconstituted Complex": 1.0,
+            "Two-hybrid": 1.0,
+            "Co-crystal Structure": 1.0,
+            "Co-purification": 1.0,
+            "Co-localization": 1.0,
+            "Affinity Capture-RNA": 1.0,
+            "PCA": 1.0,
+            "Affinity Capture-MS": 1.0,
+            "FRET": 1.0
+          }
+        }]
+      }]
+    ],
+    [
+      ["name", "sce-full-network"],
+      ["docstring", "ITM Probe Network: S. cerevisiae (full)"],
+      ["dep_node_module", "qmbpmn.common.pkg.depnode_network"],
+      ["dep_node_class", "DepITMProbeNetwork"],
+      ["hidden", false],
+      ["prereqs", ["ncbi-gene-index-sce", "biogrid-ncbi-tab"]],
+      ["args", {
+        "org_name": "Saccharomyces_cerevisiae",
+        "termdb_dir": "ETD/",
+        "graph_params": [{
+          "graph_file": "Saccharomyces_cerevisiae.Fnet.pkl",
+          "directed_systems_map": {},
+          "group_name": "Yeast Physical Interaction",
+          "biogrid_file": "NCBI.tab.txt",
+          "network_name_suffix": "Saccharomyces cerevisiae - Full",
+          "gene_info_index": "Saccharomyces_cerevisiae.gene_info.ix",
+          "network_file": "Saccharomyces_cerevisiae.Fnet.cfg",
+          "non_filtered_pubmed_ids": ["17200106", "18467557"],
+          "undirected_systems_map": {
+            "Co-fractionation": 1.0,
+            "Biochemical Activity": 1.0,
+            "Affinity Capture-Western": 1.0,
+            "Far Western": 1.0,
+            "Reconstituted Complex": 1.0,
+            "Two-hybrid": 1.0,
+            "Co-crystal Structure": 1.0,
+            "Co-purification": 1.0,
+            "Co-localization": 1.0,
+            "Affinity Capture-RNA": 1.0,
+            "PCA": 1.0,
+            "Affinity Capture-MS": 1.0,
+            "FRET": 1.0
+          },
+          "throughput_cutoff": 300000000,
+          "antisinks": ["CSE4", "HHF1", "HHF2", "HHO1", "HHT1", "HHT2", "HTA1", "HTA2", "HTB1",
+          "HTB2", "NAP1", "APJ1", "ATP11", "BTT1", "CCT2", "CCT3", "CCT4", "CCT5", "CCT6",
+          "CCT7", "CCT8", "CDC37", "CNE1", "COX20", "CPR6", "CPR7", "EGD1", "EGD2", "HSC82",
+          "HSP10", "HSP26", "HSP31", "HSP32", "HSP33", "HSP42", "HSP78", "HSP82", "JEM1", "KAR2",
+          "LHS1", "MCX1", "MDJ1", "MGE1", "MRS11", "PAM18", "PET100", "PFD1", "PNO1", "RFM1",
+          "SHR3", "SHY1", "SIS1", "SNO4", "SSA1", "SSA2", "SSA3", "SSA4", "SSB1", "SSB2",
+          "SSQ1", "SSZ1", "TCM62", "TCP1", "TIM9", "TSA1", "VMA22", "VPS45", "YDJ1", "ZUO1",
+          "ACT1", "ARC18", "ARC40", "ARP1", "ARP10", "ARP2", "ARP3", "ASK1", "BBP1", "BIM1",
+          "CDC10", "CDC11", "CDC12", "CDC3", "CDC31", "CNM67", "DAD1", "DAD2", "DAM1", "DUO1",
+          "FIN1", "JNM1", "KIP1", "MDM1", "MHP1", "MPS2", "NDC1", "NUD1", "NUF2", "SHS1",
+          "SPC105", "SPC110", "SPC19", "SPC24", "SPC25", "SPC29", "SPC34", "SPC42", "SPC72", "SPC97",
+          "SPC98", "SPR28", "SPR3", "STU1", "STU2", "TID3", "TUB1", "TUB2", "TUB3", "TUB4",
+          "YOR129C", "MYO1", "MYO2", "MYO3", "MYO4", "MYO5", "ABP140", "ALF1", "ARC15", "ASE1",
+          "ATG4", "ATG8", "BBC1", "BIK1", "BNI1", "BNR1", "BUD6", "CAP1", "CAP2", "CIN1",
+          "CRN1", "DLD2", "GCS1", "GIM3", "GIM4", "GIM5", "HOF1", "IQG1", "LAS17", "MLC1",
+          "MLC2", "NIP100", "NUM1", "PAC10", "PAC2", "PEA2", "PFY1", "RBL2", "RVS161", "RVS167",
+          "SAC6", "SCP1", "SHE4", "SLA1", "SPA2", "SPH1", "SRV2", "TPM1", "TPM2", "TWF1",
+          "VRP1", "YKE2", "HTZ1"]
+        }]
+      }]
+    ],
+    [
+      ["name", "sce-directed-network"],
+      ["docstring", "ITM Probe Network: S. cerevisiae (directed)"],
+      ["dep_node_module", "qmbpmn.common.pkg.depnode_network"],
+      ["dep_node_class", "DepITMProbeNetwork"],
+      ["hidden", false],
+      ["prereqs", ["ncbi-gene-index-sce", "biogrid-ncbi-tab"]],
+      ["args", {
+        "org_name": "Saccharomyces_cerevisiae",
+        "termdb_dir": "ETD/",
+        "graph_params": [{
+          "biogrid_file": "NCBI.tab.txt",
+          "non_filtered_pubmed_ids": ["17200106", "18467557"],
+          "undirected_systems_map": {
+            "Co-fractionation": 1.0,
+            "Two-hybrid": 1.0,
+            "Far Western": 1.0,
+            "Reconstituted Complex": 1.0,
+            "Affinity Capture-Western": 1.0,
+            "Co-crystal Structure": 1.0,
+            "Co-purification": 1.0,
+            "Co-localization": 1.0,
+            "Affinity Capture-RNA": 1.0,
+            "PCA": 1.0,
+            "Affinity Capture-MS": 1.0,
+            "FRET": 1.0
+          },
+          "gene_info_index": "Saccharomyces_cerevisiae.gene_info.ix",
+          "network_file": "Saccharomyces_cerevisiae.Dnet.cfg",
+          "throughput_cutoff": 300,
+          "antisinks": ["CSE4", "HHF1", "HHF2", "HHO1", "HHT1", "HHT2", "HTA1", "HTA2", "HTB1",
+          "HTB2", "NAP1", "APJ1", "ATP11", "BTT1", "CCT2", "CCT3", "CCT4", "CCT5", "CCT6",
+          "CCT7", "CCT8", "CDC37", "CNE1", "COX20", "CPR6", "CPR7", "EGD1", "EGD2", "HSC82",
+          "HSP10", "HSP26", "HSP31", "HSP32", "HSP33", "HSP42", "HSP78", "HSP82", "JEM1", "KAR2",
+          "LHS1", "MCX1", "MDJ1", "MGE1", "MRS11", "PAM18", "PET100", "PFD1", "PNO1", "RFM1",
+          "SHR3", "SHY1", "SIS1", "SNO4", "SSA1", "SSA2", "SSA3", "SSA4", "SSB1", "SSB2",
+          "SSQ1", "SSZ1", "TCM62", "TCP1", "TIM9", "TSA1", "VMA22", "VPS45", "YDJ1", "ZUO1",
+          "ACT1", "ARC18", "ARC40", "ARP1", "ARP10", "ARP2", "ARP3", "ASK1", "BBP1", "BIM1",
+          "CDC10", "CDC11", "CDC12", "CDC3", "CDC31", "CNM67", "DAD1", "DAD2", "DAM1", "DUO1",
+          "FIN1", "JNM1", "KIP1", "MDM1", "MHP1", "MPS2", "NDC1", "NUD1", "NUF2", "SHS1",
+          "SPC105", "SPC110", "SPC19", "SPC24", "SPC25", "SPC29", "SPC34", "SPC42", "SPC72", "SPC97",
+          "SPC98", "SPR28", "SPR3", "STU1", "STU2", "TID3", "TUB1", "TUB2", "TUB3", "TUB4",
+          "YOR129C", "MYO1", "MYO2", "MYO3", "MYO4", "MYO5", "ABP140", "ALF1", "ARC15", "ASE1",
+          "ATG4", "ATG8", "BBC1", "BIK1", "BNI1", "BNR1", "BUD6", "CAP1", "CAP2", "CIN1",
+          "CRN1", "DLD2", "GCS1", "GIM3", "GIM4", "GIM5", "HOF1", "IQG1", "LAS17", "MLC1",
+          "MLC2", "NIP100", "NUM1", "PAC10", "PAC2", "PEA2", "PFY1", "RBL2", "RVS161", "RVS167",
+          "SAC6", "SCP1", "SHE4", "SLA1", "SPA2", "SPH1", "SRV2", "TPM1", "TPM2", "TWF1",
+          "VRP1", "YKE2", "HTZ1"],
+          "graph_file": "Saccharomyces_cerevisiae.Dnet.pkl",
+          "directed_systems_map": {
+            "Biochemical Activity": 2.0
+          },
+          "group_name": "Yeast Physical Interaction",
+          "network_name_suffix": "Saccharomyces cerevisiae - Directed"
+        }]
+      }]
+    ],
+    [
+      ["name", "sce-reduced-network"],
+      ["docstring", "ITM Probe Network: S. cerevisiae (reduced)"],
+      ["dep_node_module", "qmbpmn.common.pkg.depnode_network"],
+      ["dep_node_class", "DepITMProbeNetwork"],
+      ["hidden", false],
+      ["prereqs", ["ncbi-gene-index-sce", "biogrid-ncbi-tab"]],
+      ["args", {
+        "org_name": "Saccharomyces_cerevisiae",
+        "termdb_dir": "ETD/",
+        "graph_params": [{
+          "biogrid_file": "NCBI.tab.txt",
+          "non_filtered_pubmed_ids": ["17200106", "18467557"],
+          "undirected_systems_map": {
+            "Co-fractionation": 1.0,
+            "Biochemical Activity": 1.0,
+            "Affinity Capture-Western": 1.0,
+            "Far Western": 1.0,
+            "Reconstituted Complex": 1.0,
+            "Two-hybrid": 1.0,
+            "Co-crystal Structure": 1.0,
+            "Co-purification": 1.0,
+            "Co-localization": 1.0,
+            "Affinity Capture-RNA": 1.0,
+            "PCA": 1.0,
+            "Affinity Capture-MS": 1.0,
+            "FRET": 1.0
+          },
+          "gene_info_index": "Saccharomyces_cerevisiae.gene_info.ix",
+          "network_file": "Saccharomyces_cerevisiae.Rnet.cfg",
+          "throughput_cutoff": 300,
+          "antisinks": ["CSE4", "HHF1", "HHF2", "HHO1", "HHT1", "HHT2", "HTA1", "HTA2", "HTB1",
+          "HTB2", "NAP1", "APJ1", "ATP11", "BTT1", "CCT2", "CCT3", "CCT4", "CCT5", "CCT6",
+          "CCT7", "CCT8", "CDC37", "CNE1", "COX20", "CPR6", "CPR7", "EGD1", "EGD2", "HSC82",
+          "HSP10", "HSP26", "HSP31", "HSP32", "HSP33", "HSP42", "HSP78", "HSP82", "JEM1", "KAR2",
+          "LHS1", "MCX1", "MDJ1", "MGE1", "MRS11", "PAM18", "PET100", "PFD1", "PNO1", "RFM1",
+          "SHR3", "SHY1", "SIS1", "SNO4", "SSA1", "SSA2", "SSA3", "SSA4", "SSB1", "SSB2",
+          "SSQ1", "SSZ1", "TCM62", "TCP1", "TIM9", "TSA1", "VMA22", "VPS45", "YDJ1", "ZUO1",
+          "ACT1", "ARC18", "ARC40", "ARP1", "ARP10", "ARP2", "ARP3", "ASK1", "BBP1", "BIM1",
+          "CDC10", "CDC11", "CDC12", "CDC3", "CDC31", "CNM67", "DAD1", "DAD2", "DAM1", "DUO1",
+          "FIN1", "JNM1", "KIP1", "MDM1", "MHP1", "MPS2", "NDC1", "NUD1", "NUF2", "SHS1",
+          "SPC105", "SPC110", "SPC19", "SPC24", "SPC25", "SPC29", "SPC34", "SPC42", "SPC72", "SPC97",
+          "SPC98", "SPR28", "SPR3", "STU1", "STU2", "TID3", "TUB1", "TUB2", "TUB3", "TUB4",
+          "YOR129C", "MYO1", "MYO2", "MYO3", "MYO4", "MYO5", "ABP140", "ALF1", "ARC15", "ASE1",
+          "ATG4", "ATG8", "BBC1", "BIK1", "BNI1", "BNR1", "BUD6", "CAP1", "CAP2", "CIN1",
+          "CRN1", "DLD2", "GCS1", "GIM3", "GIM4", "GIM5", "HOF1", "IQG1", "LAS17", "MLC1",
+          "MLC2", "NIP100", "NUM1", "PAC10", "PAC2", "PEA2", "PFY1", "RBL2", "RVS161", "RVS167",
+          "SAC6", "SCP1", "SHE4", "SLA1", "SPA2", "SPH1", "SRV2", "TPM1", "TPM2", "TWF1",
+          "VRP1", "YKE2", "HTZ1"],
+          "graph_file": "Saccharomyces_cerevisiae.Rnet.pkl",
+          "directed_systems_map": {},
+          "group_name": "Yeast Physical Interaction",
+          "network_name_suffix": "Saccharomyces cerevisiae - Reduced"
+        }]
+      }]
+    ],
+    [
+      ["name", "all"],
+      ["docstring", "'All' special case."],
+      ["dep_node_module", "qmbpmn.common.pkg.gluelib"],
+      ["dep_node_class", "DepNode"],
+      ["hidden", true],
+      ["prereqs", null],
+      ["args", {}]
+    ]
+  ]
+}

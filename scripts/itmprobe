@@ -1,0 +1,659 @@
+#! /usr/bin/env python
+#
+# ===========================================================================
+#
+#                            PUBLIC DOMAIN NOTICE
+#               National Center for Biotechnology Information
+#
+#  This software/database is a "United States Government Work" under the
+#  terms of the United States Copyright Act.  It was written as part of
+#  the author's official duties as a United States Government employee and
+#  thus cannot be copyrighted.  This software/database is freely available
+#  to the public for use. The National Library of Medicine and the U.S.
+#  Government have not placed any restriction on its use or reproduction.
+#
+#  Although all reasonable efforts have been taken to ensure the accuracy
+#  and reliability of the software and data, the NLM and the U.S.
+#  Government do not and cannot warrant the performance or results that
+#  may be obtained by using this software or data. The NLM and the U.S.
+#  Government disclaim all warranties, express or implied, including
+#  warranties of performance, merchantability or fitness for any particular
+#  purpose.
+#
+#  Please cite the author in any work or product based on this material.
+#
+# ===========================================================================
+#
+# Code author:  Aleksandar Stojmirovic
+#
+
+import getopt
+import os
+import sys
+import os.path
+
+from qmbpmn.common.commandtool import parse_command_line
+from qmbpmn.common.commandtool import handle_program
+from qmbpmn.common.commandtool import makeHandler
+from qmbpmn.common.commandtool import set_error_on
+
+from qmbpmn.ITMProbe import commands
+from qmbpmn.ITMProbe import itmprobe_help as help_strings
+
+def handle_command_run(flow):
+    """\
+    Usage: ``%(program)s run <input_file> <output_file>``
+
+    Run ITM Probe
+
+    Arguments:
+
+      :``<input_file>``:  A file in JSON format with ITM Probe arguments
+      :``<output_file>``: An SQLite database where the results are output
+
+    """
+    command_options = flow.cmd.command_options
+    args = flow.cmd.args
+
+    set_error_on(command_options, allowed=[])
+    if not len(args)==2:
+        raise getopt.GetoptError('Expected exactly two arguments')
+
+    kwargs = dict(input_json_file=args[0], output_file=args[1])
+    commands.run(**kwargs)
+
+
+def handle_command_standalone_run(flow):
+    """\
+    Usage: ``%(program)s standalone-run <input_file>``
+
+    Run ITM Probe with the full input graph supplied in input file. Output is
+    full report printed to stdout.
+
+    Arguments:
+
+      :``<input_file>``:  A file in JSON format with ITM Probe arguments. If
+                          the file is omitted, use stdin.
+
+    """
+    command_options = flow.cmd.command_options
+    args = flow.cmd.args
+
+    set_error_on(command_options, allowed=[])
+    if not len(args)<=1:
+        raise getopt.GetoptError('Expected at most one argument')
+    if len(args) == 0:
+        input_json_file = sys.stdin
+    else:
+        input_json_file=args[0]
+
+    kwargs = dict(input_json_file=input_json_file)
+    commands.standalone_run(**kwargs)
+
+
+def handle_command_batch_run(flow):
+    """\
+    Usage: ``%(program)s batch-run <input_file>``
+
+    Run several ITM Probe jobs in one batch.
+
+    Arguments:
+
+      :``<input_file>``:  A file in JSON format with ITM Probe batch
+                          arguments.
+
+    """
+    command_options = flow.cmd.command_options
+    args = flow.cmd.args
+
+    set_error_on(command_options, allowed=[])
+    if len(args) != 1:
+        raise getopt.GetoptError('Expected at exactly one argument')
+    input_json_file=args[0]
+
+    kwargs = dict(input_json_file=input_json_file)
+    commands.batch_run(**kwargs)
+
+
+def handle_command_table(flow):
+    """\
+    Usage: ``%(program)s table [OPTIONS] <script_file> <ITM_file> ...``
+
+    Print a table with values extracted from a collection of ITMs by a script
+
+    Arguments:
+
+      :``<script_file>``: The file containing the script for the table
+      :``<ITM_file>``: A SQLite database containing a previously saved ITM
+
+    Options:
+
+      -f, --format=<txt|csv|tab>  Output format
+
+    """
+
+    command_options = flow.cmd.command_options
+    args = flow.cmd.args
+
+    set_error_on(command_options, allowed=['out_format',])
+    if not len(args)>=2:
+        raise getopt.GetoptError('Expected at least two arguments, '
+                                 '<script_file> and <ITM_file>')
+
+    cl_map = dict(databases=args[1:])
+
+    with open(args[0], 'r') as fp:
+        cl_map['script'] = fp.read()
+
+    if command_options.has_key('out_format'):
+        cl_map['out_format'] = command_options['out_format'][0]['value']
+
+    commands.table(**cl_map)
+
+
+def handle_command_report(flow):
+    """\
+    Usage: ``%(program)s report [OPTIONS] <ITM_file>``
+
+    Print a report for an ITM
+
+    Arguments:
+
+      :``<ITM_file>``: An SQLite database containing a previously saved ITM
+
+    Options:
+
+      -f, --format=<txt|csv|tab>    Output format
+      -P, --input-params            Show only the ITM's input parameters
+      -S, --summary                 Show only the summary table
+      -N, --nodes                   Show only the network nodes table
+      -m, --max-rows=<integer>      Maximum number of rows (nodes) to show
+                                      (default 40)
+      -r, --order-by=<variable>     Ordering criterion (column)
+                                      (default  'total_content')
+      -p, --use-p-ratio             Use participation ratio to determine the
+                                      number of rows to retreive (still limited
+                                      by --max-rows option) (default true)
+      -t, --cutoff=<real>           Retrieve only rows where the --order-by
+                                      column values are greater than specified
+                                      value. This option is superseded by
+                                      the ---use-p-ratio option
+
+    """
+
+    command_options = flow.cmd.command_options
+    args = flow.cmd.args
+
+    set_error_on(command_options,
+                 allowed=['out_format', 'show_input_params', 'show_summary',
+                          'show_nodes', 'max_rows', 'order_by',
+                          'use_participation_ratio', 'cutoff_value'])
+    if not len(args)==1:
+        raise getopt.GetoptError('Expected exactly one argument, <ITM_file>')
+
+    cl_map = dict(ITM_file=args[0])
+
+    if command_options.has_key('out_format'):
+        cl_map['out_format'] = command_options['out_format'][0]['value']
+    if command_options.has_key('max_rows'):
+        cl_map['max_rows'] = int(command_options['max_rows'][0]['value'])
+    if command_options.has_key('order_by'):
+        cl_map['order_by'] = command_options['order_by'][0]['value']
+    if command_options.has_key('use_participation_ratio'):
+        cl_map['use_participation_ratio'] = True
+    else:
+        cl_map['use_participation_ratio'] = False
+    if command_options.has_key('cutoff_value'):
+        cl_map['cutoff_value'] = float(command_options['cutoff_value'][0]['value'])
+
+    if command_options.has_key('show_input_params'):
+        cl_map['show_input_params'] = True
+        cl_map['show_summary'] = False
+        cl_map['show_nodes'] = False
+    if command_options.has_key('show_summary'):
+        cl_map['show_input_params'] = False
+        cl_map['show_summary'] = True
+        cl_map['show_nodes'] = False
+    if command_options.has_key('show_nodes'):
+        cl_map['show_input_params'] = False
+        cl_map['show_summary'] = False
+        cl_map['show_nodes'] = True
+
+    commands.report(**cl_map)
+
+def handle_command_custom_layout(flow):
+    """\
+    Usage: ``%(program)s custom-layout [OPTIONS] <output_file> <script_file> <ITM_file>...``
+
+    Produce a Graphviz (neato) layout for the subgraph generated by the script.
+
+    Arguments:
+
+      :``<output_file>``: The file where the layout is saved
+      :``<script_file>``: The file containing the script
+      :``<ITM_file>``:    An SQLite database containing a previously saved ITM
+
+    Options:
+
+      -x, --neato=<path_to_neato>   The full path to neato executable
+      -s, --seed=<seed>             Random seed for neato
+
+    """
+
+    command_options = flow.cmd.command_options
+    args = flow.cmd.args
+
+    set_error_on(command_options,
+                 allowed=['seed', 'neato'])
+    if not len(args) >= 3:
+        raise getopt.GetoptError('Expected at least three arguments, '
+                                 '<output_file> <script_file> <ITM_file>')
+
+    cl_map = dict(output_file=args[0], databases=args[2:])
+    with open(args[1], 'r') as fp:
+        cl_map['script'] = fp.read()
+
+
+    if command_options.has_key('neato_executable'):
+        cl_map['neato_executable'] = command_options['neato'][0]['value']
+    if command_options.has_key('seed'):
+        cl_map['neato_seed'] = int(command_options['seed'][0]['value'])
+
+    commands.custom_layout(**cl_map)
+
+
+def handle_command_layout(flow):
+    """\
+    Usage: ``%(program)s layout [OPTIONS] <output_file> <script_file> <ITM_file>...``
+
+    Produce a Graphviz (neato) layout for the subgraph using default script.
+
+    Arguments:
+
+      :``<output_file>``: The file where the layout is saved
+      :``<ITM_file>``:    An SQLite database containing a previously saved ITM
+
+    Options:
+
+      -x, --neato=<path_to_neato>   The full path to neato executable
+      -s, --seed=<seed>             Random seed for neato
+      -m, --max-rows=<integer>      Maximum number of rows (nodes) to show
+                                      (default 40)
+      -r, --order-by=<variable>     Ordering criterion (column)
+                                      (default  'total_content')
+      -p, --use-p-ratio             Use participation ratio to determine the
+                                      number of rows to retreive (still limited
+                                      by --max-rows option) (default true)
+      -t, --cutoff=<real>           Retrieve only rows where the --order-by
+                                      column values are greater than specified
+                                      value. This option is superseded by
+                                      the ---use-p-ratio option
+
+    """
+
+    command_options = flow.cmd.command_options
+    args = flow.cmd.args
+
+    set_error_on(command_options,
+                 allowed=['seed', 'neato', 'max_rows', 'order_by',
+                          'use_participation_ratio', 'cutoff_value'])
+    if not len(args) >= 2:
+        raise getopt.GetoptError('Expected at least two arguments, '
+                                 '<output_file> <ITM_file>')
+
+    cl_map = dict(output_file=args[0], databases=args[1:])
+
+    if command_options.has_key('neato_executable'):
+        cl_map['neato_executable'] = command_options['neato'][0]['value']
+    if command_options.has_key('seed'):
+        cl_map['neato_seed'] = int(command_options['seed'][0]['value'])
+    if command_options.has_key('max_rows'):
+        cl_map['max_rows'] = int(command_options['max_rows'][0]['value'])
+    if command_options.has_key('order_by'):
+        cl_map['order_by'] = command_options['order_by'][0]['value']
+    if command_options.has_key('use_participation_ratio'):
+        cl_map['use_participation_ratio'] = True
+    else:
+        cl_map['use_participation_ratio'] = False
+    if command_options.has_key('cutoff_value'):
+        cl_map['cutoff_value'] = float(command_options['cutoff_value'][0]['value'])
+
+    commands.layout(**cl_map)
+
+
+def handle_command_custom_image(flow):
+    """\
+    Usage: ``%(program)s custom-image [OPTIONS] <output_file> <layout_file> <script_file> <ITM_file>...``
+
+    Produce a color image using a Graphviz (neato) layout for the subgraph.
+    Colors are specified through the script.
+
+    Arguments:
+
+      :``<output_file>``: The file where the image is saved
+      :``<layout_file>``: The file containing the layout
+      :``<script_file>``: The file containing the script
+      :``<ITM_file>``:    An SQLite database containing a previously saved ITM
+
+    Options:
+
+      -c, --colormap=<colormap>     The colormap to use
+      -f, --format=<svg|jpeg|png>   Image format
+      -i, --mixed-color             Produce color mixture image
+
+    """
+
+    command_options = flow.cmd.command_options
+    args = flow.cmd.args
+
+    allowed_options = ['colormap', 'out_format', 'mixed']
+    set_error_on(command_options,
+                 allowed=allowed_options)
+    if not len(args) >= 4:
+        raise getopt.GetoptError('Expected at least four arguments, '
+                                 '<output_file> <layout_file> <script_file> <ITM_file>')
+
+    cl_map = dict(output_file=args[0],
+                  layout_file=args[1],
+                  databases=args[3:])
+    with open(args[2], 'r') as fp:
+        cl_map['script'] = fp.read()
+
+    for key in ['colormap', 'out_format']:
+        if key in command_options:
+            cl_map[key] = command_options[key][0]['value']
+    if command_options.has_key('mixed'):
+        cl_map['mixed_colors'] = True
+
+    commands.custom_image(**cl_map)
+
+
+def handle_command_image(flow):
+    """\
+    Usage: ``%(program)s image [OPTIONS] <output_file> <layout_file> <ITM_file>...``
+
+    Produce a color image using a Graphviz (neato) layout for the subgraph.
+    Colors are specified using default scripts.
+
+    Arguments:
+
+      :``<output_file>``: The file where the image is saved
+      :``<layout_file>``: The file containing the layout
+      :``<ITM_file>``:    An SQLite database containing a previously saved ITM
+
+    Options:
+
+      -c, --colormap=<colormap>      The colormap to use
+      -b, --bins-func=<log|lin|sqrt>  Discretization function (logarithmic,
+                                      linear or square root)
+      -f, --format=<svg|jpeg|png>    Image format
+      -i, --mixed-color              Produce color mixture image
+      -m, --max-rows=<integer>       Maximum number of rows (nodes) to show
+                                     (default 40)
+      -r, --order-by=<variable>      Ordering criterion (column)
+                                     (default  'total_content')
+      -p, --use-p-ratio              Use participation ratio to determine the
+                                     number of rows to retreive (still limited
+                                     by --max-rows option) (default true)
+      -t, --cutoff=<real>            Retrieve only rows where the --order-by
+                                     column values are greater than specified
+                                     value. This option is superseded by
+                                     the --use-p-ratio option
+      -a, --value-cols=<columns>     A comma-separated list of columns to be
+                                     retrieved as node values. For mixed color
+                                     image (-i), the default are all 'datacols'
+                                     corresponding to sources or sinks
+                                     depending on the ITM mode. For single
+                                     color image, the default is the column
+                                     indicated by -r option.
+
+    """
+
+    command_options = flow.cmd.command_options
+    args = flow.cmd.args
+
+    allowed_options = ['colormap', 'out_format', 'mixed', 'bins_func', 'max_rows',
+                       'order_by', 'use_participation_ratio', 'cutoff_value',
+                       'value_cols']
+    set_error_on(command_options,
+                 allowed=allowed_options)
+    if not len(args) >= 3:
+        raise getopt.GetoptError('Expected at least three arguments, '
+                                 '<output_file> <layout_file> <ITM_file>')
+
+    cl_map = dict(output_file=args[0],
+                  layout_file=args[1],
+                  databases=args[2:])
+
+    for key in ['colormap', 'out_format', 'value_cols']:
+        if key in command_options:
+            cl_map[key] = command_options[key][0]['value']
+    if command_options.has_key('mixed'):
+        cl_map['mixed_colors'] = True
+    if command_options.has_key('max_rows'):
+        cl_map['max_rows'] = int(command_options['max_rows'][0]['value'])
+    if command_options.has_key('order_by'):
+        cl_map['order_by'] = command_options['order_by'][0]['value']
+    if command_options.has_key('use_participation_ratio'):
+        cl_map['use_participation_ratio'] = True
+    else:
+        cl_map['use_participation_ratio'] = False
+    if command_options.has_key('cutoff_value'):
+        cl_map['cutoff_value'] = float(command_options['cutoff_value'][0]['value'])
+    if command_options.has_key('bins_func'):
+        _map = {'lin': 'linear',
+                'log': 'log_upper',
+                'sqrt': 'sqrt'}
+        cl_map['bins_func'] = _map[command_options['bins_func'][0]['value']]
+
+    commands.image(**cl_map)
+
+
+def handle_command_weights(flow):
+    """\
+    Usage: ``%(program)s table [OPTIONS] <column> <ITM_file> ...``
+
+    Print a tab-delimited file suitable for piping into SaddleSum for
+    enrichment analysis. Sources, sinks, excluded and unreachable nodes are
+    automatically excluded.
+
+    Arguments:
+
+      :``<column>``:   A column (SQL expression) giving values for each valid
+                       note.
+      :``<ITM_file>``: A SQLite database containing a previously saved ITM
+
+    """
+
+    command_options = flow.cmd.command_options
+    args = flow.cmd.args
+
+    set_error_on(command_options, allowed=[])
+    if not len(args)>=2:
+        raise getopt.GetoptError('Expected at least two arguments, '
+                                 '<column> and <ITM_file>')
+
+    cl_map = dict(value_col=args[0], databases=args[1:])
+
+    commands.weights(**cl_map)
+
+
+command_handler_factories = {
+    'run': makeHandler(handle_command_run),
+    'standalone_run': makeHandler(handle_command_standalone_run),
+    'batch_run': makeHandler(handle_command_batch_run),
+    'table': makeHandler(handle_command_table),
+    'report': makeHandler(handle_command_report),
+    'custom_layout': makeHandler(handle_command_custom_layout),
+    'layout': makeHandler(handle_command_layout),
+    'custom_image': makeHandler(handle_command_custom_image),
+    'image': makeHandler(handle_command_image),
+    'weights': makeHandler(handle_command_weights),
+}
+
+aliases = {'run': [],
+           'standalone_run': ['standalone-run'],
+           'batch_run': ['batch-run'],
+           'table': [],
+           'report': [],
+           'custom_layout': ['custom-layout'],
+           'layout': [],
+           'custom_image': ['custom-image'],
+           'image': [],
+           'weights': [],
+           }
+
+option_sets = {
+    'out_format': [
+        dict(type='command',
+             long=['--format'],
+             short=['-f'],
+             metavar='OUTPUT_FORMAT',
+             ),
+        ],
+    'max_rows': [
+        dict(type='command',
+             long=['--max-rows'],
+             short=['-m'],
+             metavar='MAX_ROWS',
+             ),
+        ],
+    'order_by': [
+        dict(type='command',
+             long=['--order-by'],
+             short=['-r'],
+             metavar='ORDER_BY',
+             ),
+        ],
+    'use_participation_ratio': [
+        dict(type='command',
+             long=['--use-p-ratio'],
+             short=['-p'],
+             ),
+        ],
+    'cutoff_value': [
+        dict(type='command',
+             long=['--cutoff'],
+             short=['-t'],
+             metavar='CUTOFF',
+             ),
+        ],
+    'show_input_params': [
+        dict(type='command',
+             long=['--input-params'],
+             short=['-P'],
+             ),
+        ],
+    'show_summary': [
+        dict(type='command',
+             long=['--summary'],
+             short=['-S'],
+             ),
+        ],
+    'show_nodes': [
+        dict(type='command',
+             long=['--nodes'],
+             short=['-N'],
+             ),
+        ],
+    'neato': [
+        dict(type='command',
+             long=['--neato'],
+             short=['-x'],
+             metavar='NEATO_EXECUTABLE',
+             ),
+        ],
+    'seed': [
+        dict(type='command',
+             long=['--seed'],
+             short=['-s'],
+             metavar='NEATO_SEED',
+             ),
+        ],
+    'colormap': [
+        dict(type='command',
+             long=['--colormap'],
+             short=['-c'],
+             metavar='COLORMAP',
+             ),
+        ],
+    'mixed': [
+        dict(type='command',
+             long=['--mixed-colors'],
+             short=['-i'],
+             ),
+        ],
+    'bins_func': [
+        dict(type='command',
+             long=['--bins-func'],
+             short=['-b'],
+             metavar='BINS_FUNC',
+             ),
+        ],
+    'value_cols': [
+        dict(type='command',
+             long=['--value-cols'],
+             short=['-a'],
+             metavar='VALUE_COLS',
+             ),
+        ],
+    'help': [
+        dict(
+            type = 'shared',
+            long = ['--help'],
+            short = ['-h'],
+        ),
+    ],
+}
+
+program_help = """\
+Usage: ``%(program)s COMMAND [OPTIONS] ARGS``
+
+Commands:
+
+ :run:     run ITM Probe model
+ :standalone-run:  run ITM Probe model and output full report
+ :batch-run:  run several ITM Probe jobs in one batch
+ :table:   print a table from ITMs using custom script
+ :report:  print default report tables from an ITM
+ :layout:  produce Graphviz layout from ITMs using default script
+ :custom-layout:  produce Graphviz layout from ITMs using custom script
+ :image:   produce an image from a Graphviz layout using default script
+ :custom-image: produce an image from a Graphviz layout using custom script
+ :weights:   produce weights that can be piped to SaddleSum for enrichment
+             analysis
+
+Try \`%(program)s COMMAND --help\` for help on a specific command."""
+
+if __name__ == '__main__':
+    command = None
+    try:
+        program_options, command_options, command, args = parse_command_line(
+            option_sets,
+            aliases,
+        )
+        program_name = os.path.split(sys.argv[0])[1]
+        handle_program(
+            command_handler_factories=command_handler_factories,
+            option_sets=option_sets,
+            aliases=aliases,
+            program_options=program_options,
+            command_options=command_options,
+            command=command,
+            args=args,
+            program_name=program_name,
+            help=help_strings,
+        )
+    except getopt.GetoptError, err:
+        # print help information and exit:
+        print str(err)
+        if command:
+            print "Try `%(program)s %(command)s --help' for more information." % {
+                'program': os.path.split(sys.argv[0])[1],
+                'command': command,
+            }
+        else:
+            print "Try `%(program)s --help' for more information." % {
+                'program': os.path.split(sys.argv[0])[1],
+            }
+        sys.exit(2)

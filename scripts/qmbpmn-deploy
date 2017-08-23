@@ -1,0 +1,95 @@
+#! /usr/bin/env python
+#
+# ===========================================================================
+#
+#                            PUBLIC DOMAIN NOTICE
+#               National Center for Biotechnology Information
+#
+#  This software/database is a "United States Government Work" under the
+#  terms of the United States Copyright Act.  It was written as part of
+#  the author's official duties as a United States Government employee and
+#  thus cannot be copyrighted.  This software/database is freely available
+#  to the public for use. The National Library of Medicine and the U.S.
+#  Government have not placed any restriction on its use or reproduction.
+#
+#  Although all reasonable efforts have been taken to ensure the accuracy
+#  and reliability of the software and data, the NLM and the U.S.
+#  Government do not and cannot warrant the performance or results that
+#  may be obtained by using this software or data. The NLM and the U.S.
+#  Government disclaim all warranties, express or implied, including
+#  warranties of performance, merchantability or fitness for any particular
+#  purpose.
+#
+#  Please cite the author in any work or product based on this material.
+#
+# ===========================================================================
+#
+# Code author:  Aleksandar Stojmirovic
+#
+
+"""
+Reads the settings file and produces the cgi script and
+form input data.
+
+SYNOPSIS:
+
+    qmbpmn_deploy [OPTION] ... settings_file
+    qmbpmn_deploy -h|--help
+
+OPTIONS:
+    -a, --all           same as -pd
+    -c, --clean         clean all files from destination directories
+    -p, --pages         generate web pages and scripts
+    -d, --docs          generate documentation pages
+    -h, --help          print this message
+"""
+
+import sys, getopt
+from qmbpmn.web.deploy import QMBPMNDeploy
+
+
+if __name__ == "__main__":
+
+    options = 'hacpd'
+    long_options = ['help', 'all', 'clean', 'pages', 'docs']
+
+    clean = do_all = False
+    generate_docs = generate_pages = False
+
+    try:
+        opts, args = getopt.getopt(sys.argv[1:], options,
+                                   long_options)
+        for o, a in opts:
+            if o in ("-h", "--help"):
+                print __doc__
+                sys.exit()
+            if o in ("-a", "--all"):
+                do_all = True
+            if o in ("-c", "--clean"):
+                clean = True
+            if o in ("-p", "--pages"):
+                generate_pages = True
+            if o in ("-d", "--docs"):
+                generate_docs = True
+
+        if len(args) < 1:
+            print __doc__
+            sys.exit()
+
+        if do_all:
+            generate_docs = generate_pages = True
+
+        QMBPMNDeploy(args[0])(clean, generate_pages, generate_docs)
+
+    except getopt.GetoptError:
+        # print help information and exit:
+        print __doc__
+        sys.exit(2)
+
+    except RuntimeError as e:
+        # print message and exit
+        sys.stderr.write("ERROR: ")
+        sys.stderr.write(str(e))
+        sys.stderr.write('\n')
+        sys.exit(2)
+

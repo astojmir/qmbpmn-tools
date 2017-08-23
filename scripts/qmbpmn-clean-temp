@@ -1,0 +1,92 @@
+#! /usr/bin/python -u
+#
+# ===========================================================================
+#
+#                            PUBLIC DOMAIN NOTICE
+#               National Center for Biotechnology Information
+#
+#  This software/database is a "United States Government Work" under the
+#  terms of the United States Copyright Act.  It was written as part of
+#  the author's official duties as a United States Government employee and
+#  thus cannot be copyrighted.  This software/database is freely available
+#  to the public for use. The National Library of Medicine and the U.S.
+#  Government have not placed any restriction on its use or reproduction.
+#
+#  Although all reasonable efforts have been taken to ensure the accuracy
+#  and reliability of the software and data, the NLM and the U.S.
+#  Government do not and cannot warrant the performance or results that
+#  may be obtained by using this software or data. The NLM and the U.S.
+#  Government disclaim all warranties, express or implied, including
+#  warranties of performance, merchantability or fitness for any particular
+#  purpose.
+#
+#  Please cite the author in any work or product based on this material.
+#
+# ===========================================================================
+#
+# Code author:  Aleksandar Stojmirovic
+#
+
+"""
+Removes all files in the directory older than dhours.
+Writes the number of files deleted and their total size.
+
+SYNOPSIS:
+
+    qmbpmn-clean-temp directory dhours
+    qmbpmn-clean-temp -h|--help
+"""
+import sys, getopt, os, time, datetime
+from stat import *
+
+DHOURS = 12
+
+
+def del_old_files(top_dir, delta_hours=DHOURS):
+
+    dtime = datetime.timedelta(hours=delta_hours)
+    cutoff_time = int(time.time()) - int(dtime.seconds + 24*3600*dtime.days)
+
+    deleted_count = deleted_size = 0
+
+    for filename in os.listdir(top_dir):
+        pathname = os.path.join(top_dir, filename)
+        file_stat = os.stat(pathname)
+        mode = file_stat[ST_MODE]
+        # Delete only regular files older than cutoff time.
+        if S_ISREG(mode) and (file_stat[ST_ATIME] < cutoff_time):
+            deleted_count += 1
+            deleted_size += file_stat[ST_SIZE]
+            os.system('rm -f %s' % pathname)
+    return deleted_count, deleted_size
+
+
+if __name__ == "__main__":
+
+    options = 'h'
+    long_options = ['help']
+
+    try:
+        opts, args = getopt.getopt(sys.argv[1:], options,
+                                   long_options)
+        for o, a in opts:
+            if o in ("-h", "--help"):
+                print __doc__
+                sys.exit()
+
+        if len(args) < 2:
+            print __doc__
+            sys.exit()
+
+        top_dir = args[0]
+        delta_hours = float(args[1])
+        deleted_count, deleted_size = del_old_files(top_dir, delta_hours)
+        deleted_size = deleted_size // 1024
+        print "%s\tDeleted %d files from %s, %d kB." % \
+              (time.ctime(time.time()), deleted_count, top_dir, deleted_size )
+
+    except getopt.GetoptError:
+        # print help information and exit:
+        print __doc__
+        sys.exit(2)
+

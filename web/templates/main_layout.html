@@ -1,0 +1,48 @@
+{% import "layout_macros.html" as lm %}
+{%- block doctype -%}
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+{%- endblock %}
+<html>
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <title>{{ page_title }}</title>
+    <script src="{{- conf.static_suffix|abspath -}}Code.js" type="text/javascript"></script>
+    <link rel="stylesheet" type="text/css" href="{{- conf.static_suffix|abspath -}}qmbp-mn.css">
+    {%- block extrahead %}{%- endblock %}
+  </head>
+  <body {{ body_attrs|default('') -}}>
+    {%- block bodytop %}{%- endblock %}
+    <div id="wrapper">
+      {%- block topnav %}
+        {{ lm.mn_topnav(conf.topnav_logo_links, banner_links) }}
+      {%- endblock %}
+      {%- block links %}
+        {{ lm.sitemap_links(conf.link_blocks) }}
+      {%- endblock %}
+      {%- block sidebar %}
+      <div id="local">
+        <div class="content">
+          <p class="sidetitle">{{ sidebar_title }}</p>
+          {{ lm.sidebar_links(sidebar_blocks) }}
+        </div>
+      </div>
+      {%- endblock %}
+      {%- block navbar %}
+      	{{ lm.mn_navbar(conf.navbar_links) }}
+      {%- endblock %}
+      {% if contents_class -%}
+      <div id="contents" class="{{ contents_class }}">
+      {%- else -%}
+      <div id="contents">
+      {%- endif %}
+	<!-- **** block contents **** -->
+	{%- block contents %}
+	{%- endblock %}
+	<!-- **** endblock contents **** -->
+      </div>
+    </div>
+    {%- block footer %}
+    	{{ lm.mn_btmnav(conf.footer_links, conf.maintainer|default(''), last_updated) }}
+    {%- endblock %}
+  </body>
+</html>

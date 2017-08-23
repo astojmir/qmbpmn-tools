@@ -1,0 +1,31 @@
+{
+  "CV Term Dataset": [
+    ["context_mngr_func", "go_with_ncbi_gene"], 
+    ["context_mngr_module", "qmbpmn.enrich.core.goterms"], 
+    ["object_desc_fmt", "%(description)s [ %(other_designations)s ]"], 
+    ["term_url_fmt", "http://amigo.geneontology.org/cgi-bin/amigo/term-details.cgi?term=%s"], 
+    ["object_id_fmt", "%(symbol)s"], 
+    ["object_url_fmt", "http://www.ncbi.nlm.nih.gov/sites/entrez?db=gene&cmd=Retrieve&dopt=Graphics&list_uids=%(gene_id)s"]
+  ], 
+  "Graphics Options": {
+    "dot_kwargs": {
+      "relation_attr": {
+        "is_a": {
+          "color": "black"
+        }, 
+        "part_of": {
+          "color": "blue"
+        }, 
+        "regulates": {
+          "color": "gold1"
+        }, 
+        "negatively_regulates": {
+          "color": "orangered1"
+        }, 
+        "positively_regulates": {
+          "color": "green2"
+        }
+      }
+    }
+  }
+}

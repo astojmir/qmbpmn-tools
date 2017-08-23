@@ -1,0 +1,284 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<?AdobeSVGViewer save="snapshot"?>
+
+<svg width="100%" height="100%" viewBox="0 0 {{ image_view[0] }} {{ image_view[1] }}" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" onload="init1(evt);" zoomAndPan="disable">
+  <!-- don't forget to adopt the pathes to the scripts, or you'll receive a plethora of error messages -->
+  <script type="text/ecmascript" xlink:href="{{ conf.netmap_suffix|abspath }}helper_functions.js"/>
+  <script type="text/ecmascript" xlink:href="{{ conf.netmap_suffix|abspath }}mapApp.js"/>
+  <script type="text/ecmascript" xlink:href="{{ conf.netmap_suffix|abspath }}timer.js"/>
+  <script type="text/ecmascript" xlink:href="{{ conf.netmap_suffix|abspath }}slider.js"/>
+  <script type="text/ecmascript" xlink:href="{{ conf.netmap_suffix|abspath }}button.js"/>
+  <script type="text/ecmascript" xlink:href="{{ conf.netmap_suffix|abspath }}navigation.js"/>
+  <script type="text/ecmascript">
+
+    //global variables for mapApp and map object
+    var myMapApp = new mapApp(false,undefined);
+    var myMainMap;
+
+    function init1(evt) 
+    {
+	//dynamic layer array that allow loading from database
+	var dynamicLayers = new Array();
+
+	//initialize digiLayers (layers that allow digitizing)
+	var digiLayers = new Array();
+
+	//define some styles for the map object
+	var zoomRectStyles = {"fill":"none","stroke":"crimson","stroke-width":0.002,"stroke-dasharray":"0.012,0.002"};
+	var highlightStyles = {"stroke":"crimson","stroke-width":0.002};
+	var dragRectStyles = {"fill":"lightskyblue","fill-opacity":0.5};
+
+	//initialize myMainMap object, you need to adopt the parameters here
+	myMainMap = new map("mainMap",{{ mainMap_view[0] }}, {{ mainMap_view[0] * zoom_factor**zoom_levels }},{{ zoom_factor }},0,0,"",1,false,"","",dynamicLayers,digiLayers,
+			    "",zoomRectStyles,highlightStyles,dragRectStyles,"referenceMap",
+			    "myDragCrossSymbol",50);
+
+	//create zoom slider
+	//zoom slider styles
+	var sliderStyles={"stroke":"dimgray","stroke-width":2};
+	myMapApp.zoomSlider = new slider("mapZoomSlider","mapZoomSlider",10,30,myMainMap.minWidth,
+					 10,{{ refMap_scale*mainMap_view[1] - 30 }},myMainMap.maxWidth,myMainMap.maxWidth,sliderStyles,
+					 10,"sliderSymbol",myMapApp.refMapDragger,true);
+
+			
+	//now initialize buttons
+	myMapApp.buttons = new Array();
+
+	//button styles, adopt the style settings to match your needs
+	var buttonTextStyles = {"font-family":"Arial,Helvetica","fill":"dimgray","font-size":10};
+	var buttonStyles = {"fill":"white"};
+	var shadeLightStyles = {"fill":"rgb(235,235,235)"};
+	var shadeDarkStyles = {"fill":"dimgray"};
+
+	//button instance creation
+	//groupId,functionToCall,buttonType,buttonText,buttonSymbolId,x,y,width,height,textStyles,buttonStyles,shadeLightStyles,shadeDarkStyles,shadowOffset
+
+	myMapApp.buttons["zoomIn"] = new button("zoomIn","zoomIn",zoomImageButtons,"rect",undefined,
+						"magnifyerZoomIn",0,0,20,20,buttonTextStyles,
+						buttonStyles,shadeLightStyles,shadeDarkStyles,1);
+
+	myMapApp.buttons["zoomOut"] = new button("zoomOut","zoomOut",zoomImageButtons,"rect",undefined,
+						 "magnifyerZoomOut",0,{{ refMap_scale*mainMap_view[1] - 20 }},20,20,buttonTextStyles,
+						 buttonStyles,shadeLightStyles,shadeDarkStyles,1);
+
+	myMapApp.buttons["infoButton"] = new switchbutton("infoButton","infoButton",
+							  zoomImageSwitchButtons,"rect",undefined,
+							  "infoBut",0,0,20,20,buttonTextStyles,
+							  buttonStyles,shadeLightStyles,shadeDarkStyles,1);
+
+	myMapApp.buttons["infoButton"].setSwitchValue(true,false);
+
+	statusChange("Mode: Infomode");
+
+	myMapApp.buttons["zoomFull"] = new button("zoomFull","zoomFull",zoomImageButtons,"rect",
+						  undefined,"magnifyerFull",25,0,20,20,buttonTextStyles,
+						  buttonStyles,shadeLightStyles,shadeDarkStyles,1);
+
+	myMapApp.buttons["zoomManual"] = new switchbutton("zoomManual","zoomManual",zoomImageSwitchButtons,
+							  "rect",undefined,"magnifyerManual",50,0,20,20,
+							  buttonTextStyles,buttonStyles,shadeLightStyles,
+							  shadeDarkStyles,1);
+
+	myMapApp.buttons["panManual"] = new switchbutton("panManual","panManual",zoomImageSwitchButtons,
+							 "rect",undefined,"symbPan",75,0,20,20,
+							 buttonTextStyles,buttonStyles,shadeLightStyles,
+							 shadeDarkStyles,1);
+
+	myMapApp.buttons["recenterMap"] = new switchbutton("recenterMap","recenterMap",
+							   zoomImageSwitchButtons,"rect",undefined,
+							   "symbRecenter",100,0,20,20,buttonTextStyles,
+
+							   buttonStyles,shadeLightStyles,shadeDarkStyles,1);
+
+	myMapApp.buttons["backwardExtent"] = new button("backwardExtent","backwardExtent",zoomImageButtons,
+							"rect",undefined,"symbArrowLeft",125,0,20,20,
+							buttonTextStyles,buttonStyles,shadeLightStyles,
+							shadeDarkStyles,1);
+
+	myMapApp.buttons["forwardExtent"] = new button("forwardExtent","forwardExtent",zoomImageButtons,
+						       "rect",undefined,"symbArrowRight",150,0,20,20,
+						       buttonTextStyles,buttonStyles,shadeLightStyles,
+						       shadeDarkStyles,1);
+
+	//see if we need to disable buttons
+	myMainMap.checkButtons();
+			
+	//labeltext styles
+	var labeltextStyles = {"font-family":"Arial,Helvetica","fill":"dimgray","font-size":15};
+
+    }
+
+    function loadProjectSpecific() {
+    }
+  </script>
+
+  <defs>
+    <!-- Symbols for Zoom Magnifyer glasses -->
+    <symbol id="magnifyerFull" overflow="visible">
+      <text y="7.5" font-family="Arial,Helvetica" fill="dimgray" font-size="18" font-weight="bold" text-anchor="middle" pointer-events="none">F</text>
+    </symbol>
+    <symbol id="infoBut" overflow="visible">
+      <circle fill="none" stroke="dimgray" stroke-width="1.5" r="7.5" />
+      <text y="5" font-family="Arial,Helvetica" font-size="13" font-weight="bold" fill="dimgray" text-anchor="middle" pointer-events="none">i</text>
+    </symbol>
+    <symbol id="magnifyerManual" overflow="visible" fill="none" stroke="dimgray" stroke-width="1.5">
+      <rect x="-6" y="-6" width="12" height="12" stroke-dasharray="1.5,1.5"/>
+      <line x1="-3" y1="0" x2="3" y2="0" />
+      <line x1="0" y1="-3" x2="0" y2="3" />
+    </symbol>
+    <symbol id="magnifyerZoomIn" overflow="visible" fill="none" stroke="dimgray" stroke-width="2">
+      <line x1="-4" y1="0" x2="4" y2="0"/>
+      <line x1="0" y1="-4" x2="0" y2="4"/>
+    </symbol>
+    <symbol id="magnifyerZoomOut" overflow="visible">
+      <line x1="-4" y1="0" x2="4" y2="0" fill="none" stroke="dimgray" stroke-width="2" />
+    </symbol>
+    <!-- hand symbol for panning -->
+    <symbol id="symbPan" overflow="visible">
+      <path transform="scale(1.2)" fill="none" stroke="dimgray" stroke-width="1" d="M-2 6 C -2.2 2.5 -8.0 -0 -5.7 -1.9 C -4.3 -2.5 -3.3 -0.5 -2.5 0.7 C -3.2 -2.1 -5.5 -5.2 -3.6 -5.8 C -2.1 -6.3 -1.6 -3.6 -1.1 -1.9 C -0.9 -4.2 -1.6 -6.4 -0.2 -6.6 C 1.4 -6.8 0.9 -3 1.1 -1.9 C 1.5 -3.5 1.2 -6.1 2.5 -6.1 C 3.9 -6.1 3.5 -3.2 3.6 -1.6 C 4 -2.9 4.1 -4.3 5.3 -4.4 C 7.3 -3.5 4 2.2 3 6z"/>
+    </symbol>
+    <!-- Symbol for Arrows -->
+    <symbol id="symbArrow" overflow="visible">
+      <polyline fill="none" stroke="dimgray" stroke-width="1" points="-3,-6 3,-6 3,1 5,1 0,7 -5,1 -3,1 -3,-5"/>
+    </symbol>
+    <symbol id="symbArrowLeft" overflow="visible">
+      <use xlink:href="#symbArrow" transform="rotate(90)" />
+    </symbol>
+    <symbol id="symbArrowRight" overflow="visible">
+      <use xlink:href="#symbArrow" transform="rotate(-90)" />
+    </symbol>
+    <!-- Symbol for Recentering Map -->
+    <symbol id="symbRecenter" overflow="visible">
+      <circle fill="dimgray" cx="0" cy="0" r="1" pointer-events="none"/>
+      <g fill="none" stroke="dimgray" stroke-width="1.5" pointer-events="none">
+	<line x1="-7" y1="-7" x2="-3" y2="-3"/>
+	<line x1="7" y1="7" x2="3" y2="3"/>
+	<line x1="-7" y1="7" x2="-3" y2="3"/>
+	<line x1="7" y1="-7" x2="3" y2="-3"/>
+      </g>
+    </symbol>
+    <!-- Symbol for Slider -->
+    <symbol id="sliderSymbol" overflow="visible" pointer-events="none">
+      <line x1="0" y1="-5" x2="0" y2="5" fill="none" stroke="dimgray" stroke-width="5"/>
+    </symbol>
+    <!-- Symbol for Dragging if zoomed in far -->
+    <symbol id="myDragCrossSymbol" overflow="visible" stroke-width="2000" fill="none" stroke="darkblue" pointer-events="none">
+      <line x1="-7000" y1="0" x2="-2500" y2="0"/>
+      <line x1="7000" y1="0" x2="2500" y2="0"/>
+      <line x1="0" y1="-3300" x2="0" y2="-7800"/>
+      <line x1="0" y1="3300" x2="0" y2="7800"/>
+    </symbol>
+  </defs>
+
+  <title>{{ map_title }}</title>
+  <!-- this is a background rectangle that is used to ensure that the svg root element receives all mouse events, please adopt the fill attribute to match your desired background color -->
+  <rect x="-500" y="-500" width="3000" height="3000" stroke="none" fill="none" />
+
+
+  <!-- *** MAIN MAP *** -->
+  <g transform="translate({{ mainMap_pos[0] }} {{ mainMap_pos[1] }})" >
+    <rect  x="0" y="0" width="{{ mainMap_view[0] }}" height="{{ mainMap_view[1] }}" stroke="none" fill="#eee" />
+    <polyline fill="none" stroke="dimgray" stroke-width="0.5px" points="0,0 0,{{ mainMap_view[1] }} {{ mainMap_view[0] }},{{ mainMap_view[1] }} {{ mainMap_view[0] }},0 0,0"/>
+    <svg id="mainMap" x="0" y="0" width="{{ mainMap_view[0] }}" height="{{ mainMap_view[1] }}"  viewBox="0 0 {{ mainMap_view[0] }} {{ mainMap_view[1] }}" cursor="crosshair">
+      <!-- this group is necessary for manual panning, it temporarily gets a translate transformation which is later removed on mouseup -->
+      <g id="mainMapGroup" transform="translate(0,0)">
+	{{ mainMap_content }}
+      </g>
+    </svg>
+  </g>
+
+  <!-- *** REFERENCE MAP + ZOOM SLIDER *** -->
+  <g transform="translate({{ refMap_pos[0] }} {{ refMap_pos[1] }})" >
+    <svg id="referenceMap" x="0" y="0" width="{{ refMap_scale * mainMap_view[0] }}" height="{{ refMap_scale * mainMap_view[1] }}" viewBox="0 0 {{ mainMap_view[0] }} {{ mainMap_view[1] }}">
+      <!-- here you can place any graphical elements for your reference/overview map -->
+      <g id="referenceMapGroup" transform="translate(0,0)">
+	{{ refMap_content }}
+      </g>
+    </svg>
+    <polyline fill="none" stroke="dimgray" stroke-width="0.5px" points="0,0 0,{{ refMap_scale * mainMap_view[1] }} {{ refMap_scale * mainMap_view[0] }},{{ refMap_scale * mainMap_view[1] }} {{ refMap_scale * mainMap_view[0] }},0 0,0"/>
+    <g transform="translate({{ refMap_scale * mainMap_view[0] + 20 }} 0)">
+      <!-- empty group where zoomSlider is later appended -->
+      <g id="mapZoomSlider" />
+      <!-- button for zoom-in, above slider -->
+      <g id="zoomIn" cursor="pointer" />
+      <!-- button for zoom-out, below slider -->
+      <g id="zoomOut" cursor="pointer" />
+    </g>
+  </g>
+
+
+  <!-- *** TOOLBAR *** -->
+  <g transform="translate({{ toolbar_pos[0] }} {{ toolbar_pos[1] }})">
+    <text fill="dimgray" font-family="Arial,Helvetica" font-weight="bold" font-size="15" x="0" y="-15" pointer-events="none">{{ tools_title }}</text>
+    <!-- info button -->
+    <g id="infoButton" cursor="pointer" />
+    <!-- button for full view (f) -->
+    <g id="zoomFull" cursor="pointer" />
+    <!-- button for manual zoom (rectangle) -->
+    <g id="zoomManual" cursor="pointer" />
+    <!-- button for manual pan -->
+    <g id="panManual" cursor="pointer" />
+    <!-- button for redefining map center -->
+    <g id="recenterMap" cursor="pointer" />
+    <!-- button for backwarding map extent (extent history) -->
+    <g id="backwardExtent" cursor="pointer" />
+    <!-- button for forwarding map extent (extent history) -->
+    <g id="forwardExtent" cursor="pointer" />
+  </g>
+
+  <!-- *** LEGEND *** -->
+
+  <g id="legendGroup"  transform="translate({{ legend_pos[0] }} {{ legend_pos[1] }})" stroke-width="0.3px">
+  {%- if vertical_legend %}
+    {%- for clr in color_list %}
+    <polyline fill="rgb({{ clr[0] }},{{ clr[1] }},{{ clr[2] }})" points="0,{{ loop.index0*25 }} 25,{{ loop.index0*25 }} 25,{{ loop.index*25 }} 0,{{ loop.index*25 }} 0,{{ loop.index0*25 }}" stroke="dimgray"/>    
+    {%- endfor %}
+    {%- for bndr in boundaries %}
+    <text fill="dimgray" font-family="Arial,Helvetica" font-size="12" pointer-events="none" x="{{ 25 + 4 }}" y="{{ loop.index*25 + 3 }}">{{ bndr }}</text>
+    {%- endfor %}
+  {%- else %}
+    {%- for clr in color_list %}
+    <polyline fill="rgb({{ clr[0] }},{{ clr[1] }},{{ clr[2] }})" points="{{ loop.index0*25 }},0 {{ loop.index0*25 }},25 {{ loop.index*25 }},25 {{ loop.index*25 }},0 0,0" stroke="dimgray"/>    
+    {%- endfor %}
+    {%- for bndr in boundaries %}
+    <text fill="dimgray" font-family="Arial,Helvetica" font-size="12" pointer-events="none" x="{{ loop.index*25 + 3 }}" y="-3" transform="rotate(-45,{{ loop.index*25 + 3 }},-3)" >{{ bndr }}</text>
+    {%- endfor %}
+  {%- endif %}
+  </g>
+
+  {%- if node_legend_pos %}
+  <g id="nodeLegendGroup"  transform="translate({{ node_legend_pos[0] }} {{ node_legend_pos[1] }})" stroke-width="0.3px">
+    <g transform="scale(1.25)">
+      <path fill="#ffffff" stroke="#606060" stroke-width="0.375" d="M28.1967 14.791L21.2623 1.595L7.39358 1.595L0.459221 14.791L7.39358 27.988L21.2623 27.988L28.1967 14.791Z"  />
+      <g transform="translate(0 3.2)">
+	<path fill="#ffffff" stroke="#606060" stroke-width="0.375" d="M29.224 49.752L29.224 38.5331L20.8026 30.6L8.8929 30.6L0.471568 38.5331L0.471568 49.752L8.8929 57.6851L20.8026 57.6851L29.224 49.752Z"  />
+      </g>
+      <g transform="translate(0 6.8)">
+	<path fill="#ffffff" stroke="#606060" stroke-width="0.375" d="M30.4716 69.75C30.4716 74.5825 23.7559 78.5 15.4716 78.5C7.18727 78.5 0.471568 74.5825 0.471568 69.75C0.471568 64.9175 7.18727 61 15.4716 61C23.7559 61 30.4716 64.9175 30.4716 69.75Z"  />
+      </g>
+      <g transform="translate(0 7.8)">
+	<path fill="#ffffff" stroke="#606060" stroke-width="0.375" d="M30.4716 86.75L0.471568 86.75L0.471568 101.75L30.4716 101.75L30.4716 86.75Z"  />
+      </g>
+    </g>
+    <text fill="dimgray" font-family="Arial,Helvetica" font-size="12" pointer-events="none" x="45" y="20">Source</text>
+    <text fill="dimgray" font-family="Arial,Helvetica" font-size="12" pointer-events="none" x="45" y="65">Sink</text>
+    <text fill="dimgray" font-family="Arial,Helvetica" font-size="12" pointer-events="none" x="45" y="95">With</text>
+    <text fill="dimgray" font-family="Arial,Helvetica" font-size="12" pointer-events="none" x="45" y="108">self-loop</text>
+    <text fill="dimgray" font-family="Arial,Helvetica" font-size="12" pointer-events="none" x="45" y="128">Without</text>
+    <text fill="dimgray" font-family="Arial,Helvetica" font-size="12" pointer-events="none" x="45" y="141">self-loop</text>
+<!--     <text fill="dimgray" font-family="Arial,Helvetica" font-size="12" pointer-events="none" x="45" y="210">edge</text> -->
+  </g>
+    
+  {%- endif %}
+
+  <!-- *** NOT PRESENTLY USED *** -->
+  <g>
+    <!-- display width and height of map extent -->
+    <!-- map impressum and status Bar -->
+    <g text-rendering="optimizeLegibility" font-family="Arial,Helvetica" fill="dimgray" font-size="12">
+      <!-- text with this id is required to show help texts -->
+      <text id="statusText" style="display:none;" x="415" y="140">Statusbar: Your Status Text</text>
+    </g>
+  </g>
+</svg>

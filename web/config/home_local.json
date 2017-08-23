@@ -1,0 +1,11 @@
+{
+  "debug": true,
+  "site_root": "/home/aleksand/data/qmbpmn_local/htdocs/",
+  "data_root": "/home/aleksand/data/qmbpmn_local/data/",
+  "python_bin": "/usr/bin/python2.6",
+  "graphviz_path": "/usr/bin/",
+  "python_paths": ["/home/aleksand/Work/Projects/python-dev-code"],
+  "enrich_termdb_dir": "shared/ETD/",
+  "enrich_source_root": "/home/aleksand/Work/code/SaddleSum/"
+}
+

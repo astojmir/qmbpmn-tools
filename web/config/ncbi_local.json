@@ -1,0 +1,14 @@
+{
+  "debug": true,
+  "site_root": "/home/stojmira/Projects/qmbpmn_local/htdocs/",
+  "data_root": "/home/stojmira/Projects/qmbpmn_local/data/",
+  "python_bin": "/home/stojmira/arch/bender/bin/python2.6",
+  "graphviz_path": "/opt/graphviz-2.16.1/bin/",
+  "python_paths": ["/home/stojmira/Projects/python-dev-code"],
+
+  "ITMProbe_network_dir": "/home/stojmira/storage/data/qmbpmn-tools_datasets/update20110725/",
+  "enrich_termdb_dir": "/home/stojmira/storage/data/qmbpmn-tools_datasets/update20110725/ETD/",
+  "enrich_source_root": "/home/stojmira/code/SaddleSum/",
+  "saddlesum_path": "/home/stojmira/code/SaddleSum/build/"
+}
+

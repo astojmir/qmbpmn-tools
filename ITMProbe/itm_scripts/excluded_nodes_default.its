@@ -1,0 +1,10 @@
+@data := SELECT group_concat(nodes.name, ', ') FROM nodes, damping
+         WHERE nodes.nodeid=damping.nodeid AND damping.dfout=0.0
+         ORDER BY nodes.name;
+
+@column_headers := SELECT NULL;
+
+@column_formats := SELECT '{0}';
+
+@title := SELECT 'Excluded Nodes';
+

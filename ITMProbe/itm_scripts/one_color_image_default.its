@@ -1,0 +1,11 @@
+$valcols$ := $valcolstmt$;
+@node_values := SELECT name, $valcols$ FROM results $criterion$ ORDER BY rowid LIMIT $limit$;
+
+$tmp1$ := CREATE TEMPORARY TABLE range (idx INTEGER PRIMARY KEY);
+$tmp2$ := CREATE TEMPORARY TRIGGER rngtrig BEFORE INSERT ON range
+            WHEN NEW.idx > 1 BEGIN
+              INSERT OR REPLACE INTO range (idx) VALUES (NEW.idx - 1) $semicolumn$
+            END;
+$tmp3$ := INSERT INTO range (idx) VALUES (7);
+
+@bins := SELECT bin(idx) FROM range ORDER BY idx;

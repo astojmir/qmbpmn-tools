@@ -1,0 +1,18 @@
+@data := SELECT rowid, * FROM results $criterion$ ORDER BY rowid LIMIT $limit$;
+
+@column_headers := SELECT name FROM
+                   (SELECT 'Rank' AS name, -1 as rnk UNION
+                    SELECT 'Node', 0 UNION
+                    SELECT nodes.name, sources.sourceid+3 FROM nodes JOIN sources
+                          ON nodes.nodeid=sources.nodeid UNION
+                    SELECT 'Interference', 2000 UNION
+                    SELECT 'Total', 2001 ORDER BY rnk);
+
+@column_formats := SELECT fmt FROM
+                   (SELECT '{0:d}.' AS fmt, -1 as rnk UNION
+                    SELECT '{0}', 0 UNION
+                    SELECT '{0:.2g}', sources.sourceid+1 FROM sources UNION
+                    SELECT '{0:.2g}', 2000 UNION
+                    SELECT '{0:.2g}', 2001 ORDER BY rnk);
+
+@title := SELECT 'Top scoring nodes (per source)';

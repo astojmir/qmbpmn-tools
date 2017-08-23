@@ -1,0 +1,70 @@
+{% macro go_query_panel(query_id, weights, cutoff_pvalue, colormaps, image_processors) -%}
+<a class="tog-master-open pan-head" id="toggoquery" config="animate:false">Gene Ontology Parameters</a>
+<div id="go_query_panel" toggle="toggoquery" class="tog-slave-open">
+    <input id="query_id" name="query_id" type="hidden" value="{{ query_id }}"/>
+    <fieldset id="rendering-options">
+      <div class="input_field">
+	<label for="image_format">Image Format:</label>
+	<select id="image_format" name="image_format">
+	  {% for ip in go_image_processors -%}
+	  {% if loop.first -%}
+	  <option selected="selected" value="{{ ip.name }}">{{ ip.text }}</option>
+	  {% else -%}
+	  <option value="{{ ip.name }}">{{ ip.text }}</option>
+	  {% endif -%}
+	  {%- endfor -%}
+	</select>
+      </div>
+      <div class="input_field">
+	<label for="antisink_map" id="excluded">Excluded Nodes: enter here</label><br/>
+	<textarea cols="50" id="antisink_map" name="antisink_map" rows="6"></textarea>
+	<label for="antisink_map2">or submit a file</label><br/>
+	<input type="hidden" name="MAX_FILE_SIZE" value="128" />
+	<input type="file" accept="text/plain" class="nodes_input" id="antisink_map2" name="antisink_map2"/>
+      </div>
+      <div class="input_field">
+	<label for="value_attr">Weights:</label>
+	<select id="value_attr" name="value_attr">
+	  {% for txt, val in weights -%}
+	  {% if loop.first -%}
+	  <option selected="selected" value="{{ val }}">{{ txt }}</option>
+	  {% else -%}
+	  <option value="{{ val }}">{{ txt }}</option>
+	  {% endif -%}
+	  {%- endfor -%}
+	</select>
+      </div>
+      <div class="input_field">
+	<label for="cutoff_Evalue">E-value Cutoff:</label>
+	<input class="coeff_input" id="cutoff_Evalue" name="cutoff_Evalue" size="4" type="text" value="{{ cutoff_Evalue }}"/>
+      </div>
+      <div class="input_field">
+	<label for="color_map">Color Map:</label>
+	<select id="color_map" name="color_map">
+	  {% for txt, val in colormaps -%}
+	  {% if loop.first -%}
+	  <option selected="selected" value="{{ val }}">{{ txt }}</option>
+	  {% else -%}
+	  <option value="{{ val }}">{{ txt }}</option>
+	  {% endif -%}
+	  {%- endfor -%}
+	</select>
+      </div>
+      <div class="input_field">
+	<label for="image_format">Image Format:</label>
+	<select id="image_format" name="image_format">
+	  {% for ip in go_image_processors -%}
+	  {% if loop.first -%}
+	  <option selected="selected" value="{{ ip.name }}">{{ ip.text }}</option>
+	  {% else -%}
+	  <option value="{{ ip.name }}">{{ ip.text }}</option>
+	  {% endif -%}
+	  {%- endfor -%}
+	</select>
+      </div>
+    </fieldset>
+  {{ actionbar(go_actionbar) }}
+</div>
+<br/>
+{%- endmacro %}
+

@@ -1,0 +1,23 @@
+{% extends "main_layout.html" %}
+{%- set page_title = 'ITM Gallery' %}
+{%- set sidebar_title = conf.ITMProbe_sidebar_title %}
+{%- set sidebar_blocks = conf.ITMProbe_sidebar_blocks %}
+{%- set banner_links = conf.ITMProbe_banner_links %}
+
+{%- block extrahead %}
+    <link href="{{- static_path -}}/qmbp-mn-app.css" rel="stylesheet" type="text/css">
+{%- endblock %}
+
+{% block contents %}
+    <table class="gallerytoctable" width="100%">
+      <tbody>
+	{%- for row in processed_items|batch(items_per_row) %}
+	<tr>
+	{%- for item in row %}
+	  <td><a href="{{ item[2] }}" title="{{ item[1] }}">{{ item[0] }}</a></td>
+	{%- endfor %}
+	</tr>
+	{% endfor -%}
+      </tbody>
+    </table>
+{% endblock %}

@@ -1,0 +1,8 @@
+{
+        "model": "emitting",
+        "graph_path": "/home/aleksand/data/qmbpmn_local/data/shared/Saccharomyces_cerevisiae.Dnet.pkl",
+        "antisink_map": {"SLT2": 0.0, "NUP53": 0.0},
+        "source_nodes": ["CDC42", "ELP3", "STE12"],
+        "da": 61.001,
+        "df": null
+}

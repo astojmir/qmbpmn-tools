@@ -1,0 +1,51 @@
+{% extends "!layout.html" %}
+{% import "layout_macros.html" as lm %}
+
+{%- block extrahead %}
+    <link rel="stylesheet" type="text/css" href="{{- conf.static_suffix|abspath -}}qmbp-mn.css">
+    <link rel="stylesheet" type="text/css" href="{{- conf.static_suffix|abspath -}}docs.css">
+    <script src="{{- conf.static_suffix|abspath -}}Code.js" type="text/javascript"></script>
+    <script type="text/javascript">window.onload = ao.load;</script>
+{% endblock -%}
+
+{%- block sidebarsearch %}
+    {%- if pagename != "search" %}
+    <h3>{{ builder == 'web' and 'Keyword' or 'Quick' }} search</h3>
+    <form class="search" action="{{ pathto('search') }}" method="get">
+      <input type="text" id="searchbox" name="q" size="18"> <input type="submit" value="Go">
+      <input type="hidden" name="check_keywords" value="yes">
+      <input type="hidden" name="area" value="default">
+    </form>
+    {%- endif %}
+{%- endblock %}
+
+
+{%- block relbar1 %}{% endblock %}
+
+{%- block content %}
+  <div id="wrapper">
+    {{ lm.mn_topnav(conf.topnav_logo_links, banner_links) }}
+    {{ lm.sitemap_links(conf.link_blocks) }}
+    {%- block sidebar1 %}
+    <div id="local">
+      <div class="content">
+        <p class="sidetitle">{{ sidebar_title }}</p>
+        {{ lm.sidebar_links(sidebar_blocks) }}
+        {{ sidebar() }}
+      </div>
+    </div>
+    {% endblock %}
+    {%- block document %}
+    <div id="contents" class="qmbpmn-docs">
+      {% block body %}{% endblock %}
+    </div>
+    {%- endblock %}
+    {%- block sidebar2 %}{% endblock %}
+  </div>
+{%- endblock %}
+
+{%- block relbar2 %}{% endblock %}
+
+{%- block footer %}
+  {{ lm.mn_btmnav(conf.footer_links, conf.maintainer|default(''), last_updated) }}
+{%- endblock %}

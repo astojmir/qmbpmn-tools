@@ -1,0 +1,47 @@
+{%- extends "main_layout.html" %}
+{%- from "table.html" import actionbar -%}
+{%- set sidebar_title = conf.ITMProbe_sidebar_title %}
+{%- set sidebar_blocks = conf.ITMProbe_sidebar_blocks %}
+{%- set banner_links = conf.ITMProbe_banner_links %}
+{%- set model_actionbar = [("document.queryid_form.submit()","Run",'run'), ("document.queryid_form.reset()","Reset",'reset1'), ] -%}
+{%- if not page_title -%}
+{%- set page_title = 'ITM Probe: main page' %}
+{%- endif -%}
+{%- block extrahead %}
+    <link  type="text/css" href="{{- conf.static_suffix|abspath -}}qmbp-mn-app.css" rel="stylesheet">
+    <link  type="text/css" href="{{- conf.static_suffix|abspath -}}qmbp-mn-tbl.css" rel="stylesheet">
+{%- endblock %}
+{%- if not body_attrs -%}
+{%- set body_attrs = 'onload="ao.load();"' %}
+{%- endif -%}
+{%- block contents %}
+    <div class="itm_toc" id="main_toc">
+      <p>ITM Probe is a collection of web based tools for analysis of information flow
+        in protein-protein interaction networks based on random walks. A user selects
+        the appropriate model (channel, emitting or absorbing), the
+        protein-interaction graph and the context for information flow and receives a
+        set of most significant nodes - an ITM (Information Transduction Module).</p>
+      <p>Choose an ITM Probe model to run...</p>
+      <table class="striped" id="contents_table">
+	{%- for model in conf.ITMProbe_imported_models %}
+	<tr class="{{ loop.cycle('row1','row2') }}">
+	  <td><a href="{{- conf.ITMProbe_htdocs_suffix|abspath -}}{{- model.input_page_name() -}}">{{ model.title }}</a></td>
+	  <td>{{ model.description }}</td>
+	</tr>
+	{%- endfor %}
+      </table>
+    </div>
+    <p>or enter Query ID to retrieve results of previous runs.</p>
+   <form action="ITMProbe.cgi" id="queryid_form" method="POST" name="queryid_form" target="_blank" enctype="multipart/form-data">
+     <fieldset>
+     <input type="hidden" name="view" value="1">
+     <!-- <div id="params_panel"> -->
+       <div class="input_field">
+	 <label for="query_id">Query ID:</label>
+	 <input class="nodes_input" id="query_id" name="query_id" type="text">
+       </div>
+       {{ actionbar(model_actionbar) }}
+     </fieldset>
+     <!-- </div> -->
+   </form>
+{%- endblock %}

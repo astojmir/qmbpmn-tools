@@ -1,0 +1,25 @@
+@data := SELECT qty, val FROM
+           (SELECT 'Visits Participation Ratio' AS qty, participation_ratio(total_content) AS val, 0 AS rnk
+              FROM results UNION
+            SELECT 'Total Nodes Visited', sum(total_content), 1 FROM results UNION
+            SELECT 'Participation Visits', sum(total_content) / participation_ratio(total_content), 2
+              FROM results UNION
+            SELECT 'Total Interference', sum(interference), 3 FROM results UNION
+            SELECT 'Avg. path length from ' || nodes.name, t2.val, t2.rnk FROM
+                (SELECT sources.nodeid, t1.val, sources.sourceid + 7 AS rnk FROM
+                    (SELECT PhiK.sourceid, (sum(PhiK.val)-1) AS val FROM PhiK GROUP BY PhiK.sourceid) AS t1 JOIN sources
+                     ON t1.sourceid=sources.sourceid) AS t2 JOIN nodes
+                 ON t2.nodeid=nodes.nodeid UNION
+            SELECT 'Avg. path length from all sources', sum(PhiK.val) / (max(PhiK.sourceid) + 1) - 1.0, 2000 FROM PhiK)
+            ORDER by rnk;
+
+@column_headers := SELECT name FROM
+                   (SELECT 'Quantity' AS name, -1 as rnk UNION
+                    SELECT 'Value', 0 ORDER BY rnk);
+
+@column_formats := SELECT fmt FROM
+                   (SELECT '{0}:' AS fmt, -1 as rnk UNION
+                    SELECT '{0:.2f}', 0  ORDER BY rnk);
+
+@title := SELECT 'Summary';
+

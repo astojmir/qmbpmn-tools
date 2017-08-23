@@ -1,0 +1,8 @@
+@weights := SELECT name, $valcol$ FROM results
+            WHERE results.name NOT IN
+              (SELECT nodes.name FROM nodes,
+                 (SELECT nodeid FROM sources UNION
+                  SELECT nodeid FROM sinks UNION
+                  SELECT nodeid FROM damping WHERE damping.dfout=0) AS t1
+               WHERE nodes.nodeid=t1.nodeid)
+            AND $valcol$ > 0;

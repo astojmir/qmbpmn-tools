@@ -1,0 +1,25 @@
+{
+        "global_params": {
+                                "graph_path": "/home/stojmira/storage/data/qmbpmn-tools_datasets/update20110725/Saccharomyces_cerevisiae.Dnet.pkl",
+                                 "df": 0.85,
+                                 "antisink_map": {"SLT2": 0.0, "NUP53": 0.0}
+                         },
+        "jobs": [
+                {
+                        "output_file": "btch2.itm",
+                        "model": "normalized-channel",
+                        "source_nodes": ["ELP3", "ESA1", "GCN5"],
+                        "sink_nodes": ["RPO21", "POL2"]
+                },
+                {
+                        "output_file": "btch1.itm",
+                        "model": "absorbing",
+                        "sink_nodes": ["CDC42", "ELP3", "STE12"]
+                },
+                {
+                        "output_file": "btch3.itm",
+                        "model": "emitting",
+                        "source_nodes": ["CDC42"]
+                }
+        ]
+}

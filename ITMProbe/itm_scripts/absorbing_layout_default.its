@@ -1,0 +1,3 @@
+@shown_nodes := SELECT name FROM results $criterion$ ORDER BY rowid LIMIT $maxrows$;
+@sources := SELECT nodes.name FROM nodes, sources WHERE nodes.nodeid=sources.nodeid;
+@sinks := SELECT nodes.name FROM nodes, sinks WHERE nodes.nodeid=sinks.nodeid;

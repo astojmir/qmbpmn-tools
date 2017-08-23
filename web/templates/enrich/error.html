@@ -1,0 +1,17 @@
+{% extends "main_layout.html" %}
+
+{%- set page_title = 'SaddleSum Error' %}
+{%- set sidebar_title = conf.enrich_sidebar_title %}
+{%- set sidebar_blocks = conf.enrich_sidebar_blocks %}
+{%- set banner_links = conf.enrich_banner_links %}
+{%- if not body_attrs -%}
+{%- set body_attrs = 'onload="ao.load();"' %}
+{%- endif -%}
+
+
+{% block contents %}
+<h2>SaddleSum Error</h2>
+<p class="message_error">{{ error_msg | e }}</p>
+{% endblock %}
+
+

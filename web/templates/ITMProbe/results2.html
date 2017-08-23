@@ -1,0 +1,94 @@
+{% extends "main_layout.html" %}
+{% from "table.html" import striped_table %}
+{%- from "ITMProbe/display_panel.html" import display_panel -%}
+{%- import "ITMProbe/cvterm_query_panel.html" as cvqp -%}
+
+{%- set display_actionbar = [("document.display_form.submit()","Render",'render'), ("resetDisplay()","Reset",'reset2')] -%}
+
+{%- set page_title = 'ITM Probe results' -%}
+{%- set sidebar_title = conf.ITMProbe_sidebar_title %}
+{%- set sidebar_blocks = conf.ITMProbe_sidebar_blocks %}
+{%- set banner_links = conf.ITMProbe_banner_links %}
+{%- if not body_attrs -%}
+{%- set body_attrs = 'onload="Toggle._onload();updateDisplayOptions();ao.load();"' %}
+{%- endif -%}
+
+{%- block extrahead %}
+    <link type="text/css" href="{{- conf.static_suffix|abspath -}}qmbp-mn-app.css" rel="stylesheet">
+    <script type="text/javascript" src="{{- conf.static_suffix|abspath -}}utils.js"></script>
+    <script type="text/javascript" src="{{- conf.static_suffix|abspath -}}toggle.js"></script>
+    <script type="text/javascript" src="{{- conf.static_suffix|abspath -}}itm_probe.js"></script>
+    <script type="text/javascript"> clientState = {{ client_state|jsonencode }}</script>
+{%- endblock %}
+
+{%- block sidebar %}
+    <div id="local">
+      <div class="content">
+        <p class="sidetitle">ITM Probe Query Results</p>
+        <div class="sidebarwrapper">
+	  <div class="sidebar">
+	    <h4><a href="#togdisplay">Display Parameters</a></h4>
+	    <ul>
+	      <li><a href="#layout-options">Layout Options</a></li>
+	      <li><a href="#rendering-options">Rendering Options</a></li>
+	    </ul>
+	    <h4><a href="#results">Results</a></h4>
+	    <ul>
+	      <li><a href="#{{- params_table.id -}}">{{ params_table.title }}</a></li>
+	      <li><a href="#graphic-summary">Graphic Summary</a></li>
+              {%- for tbl in summary_table, node_table, excluded_table -%}
+	      <li><a href="#{{- tbl.id -}}">{{ tbl.title }}</a></li>
+              {% endfor -%}
+	    </ul>
+	    <h4><a href="#enrich-params">Term Enrichment Analysis</a></h4>
+	  </div>
+        </div>
+      </div>
+    </div>
+{%- endblock %}
+
+
+{%- block contents %}
+<form action="ITMProbe.cgi" id="display_form" method="GET" name="display_form">
+  <input type="hidden" name="view" value="1">
+  {{ display_panel(client_state, image_processors, display_actionbar) }}
+</form>
+<span class="sec_title" id="results">Results</span>
+<div id="results_panel">
+  <div id="text_main">
+    <div id="text_header">
+      <h3 id="{{- params_table.id -}}">{{ params_table.title }}</h3>
+      {{ striped_table(params_table) }}
+      <br>
+      {% if warning_msgs -%}
+      <div class="toggles2">
+	<a class="showing grp-head" href="#" id="togwarnings">Warnings</a>
+	<div class="shown message_warning" id="warnings" toggle="togwarnings">
+	  <ol>
+	    {%- for row in warning_msgs -%}
+	    <li>{{ row }}</li>
+	    {% endfor -%}
+	  </ol>
+	</div>
+      </div>
+      <br>
+      {% endif -%}
+    </div>
+    <div id="image_main">
+      <h3 id="graphic-summary">Graphic Summary</h3>
+      {{ img_spec }}
+    </div>
+    {%- for tbl in summary_table, node_table, excluded_table -%}
+    <h3 id="{{- tbl.id -}}">{{ tbl.title }}</h3>
+    {{ striped_table(tbl) }}
+    <br>
+    {% endfor -%}
+  </div>
+</div>
+<br>
+{{ cvqp.cvterm_query_panel(cvterm_opts) }}
+<br>
+{% endblock %}
+
+
+

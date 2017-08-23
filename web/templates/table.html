@@ -1,0 +1,39 @@
+{%- macro actionbar(buttons) -%}
+    <div class="actionbar">
+      <table id="action_bar">
+	<tr>
+	  {%- for onclick, val, id in buttons -%}
+	  <td><input class="action_button" id="{{ id }}" onclick="{{ onclick }}" type="button" value="{{ val }}"></td>
+	  {% endfor -%}
+	  <td class="right_align"></td>
+	</tr>
+      </table>
+    </div>
+{%- endmacro %}
+
+{%- macro striped_table(tbl) -%}
+    {%- if not tbl.body %}
+    <p> No significant hits reported.</p>
+    {%- else -%}
+    <table class="striped" >
+      {%- if tbl.header -%}
+      <thead>
+	<tr>
+	{%- for hc in tbl.header -%}
+	<th {%- if tbl.col_classes %} class="{{ tbl.col_classes[loop.index0] }}"{% endif %}>{{ hc }}</th>
+	{%- endfor %}
+	</tr>
+      </thead>
+      {%- endif %}
+      <tbody>
+	{% for row in tbl.body -%}
+	<tr class="{{ loop.cycle('row1','row2') }}">
+	{%- for bc in row -%}
+	  <td {%- if tbl.col_classes %} class="{{ tbl.col_classes[loop.index0] }}"{% endif %}>{{ bc }}</td>
+	{%- endfor -%}
+	</tr>
+	{% endfor -%}
+      </tbody>
+    </table>
+    {%- endif %}
+{%- endmacro %}
